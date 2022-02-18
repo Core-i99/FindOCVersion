@@ -8,4 +8,4 @@ Script to find the Opencore version from an EFI folder
 - Unzip the downloaded file
 - Open terminal
 - cd `FindOCVersion_directory`
-- python3 ./Script.py
+- python3 ./FindOCVersion.py
