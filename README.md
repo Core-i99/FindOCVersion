@@ -1,5 +1,5 @@
 # FindOCVersion
-Script to find the Opencore version from an EFI folder
+Script to find the Opencore version from an EFI folder based on MD5 checksum
 
 # Usage
 - Make sure python3 is installed!
