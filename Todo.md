@@ -3,3 +3,4 @@
 - Support OpenCore versions from the first relase to latest
 - Offline and online mode ?
 - Let text colors depend on dark mode or light mode
+- Make a gui app based on tkinter
