@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see <http://www.gnu.org/licenses/>.
 
+#TODO
+# - Get MD5 checksums from a database file
+
 import hashlib, os, datetime, platform
 
 Script_Version = "V1.0" 
@@ -128,7 +131,6 @@ elif digest == "33dc9e8185b66f4ab466890590011351": # 0.6.9 REL
     print("0.6.9 RELEASE")     
 elif digest == "5b8545e031bd9341f7bc20fe313cc390": # 0.6.9 DEB
     print("0.6.9 DEBUG")    
-
 
 else: 
     print("Could not find OpenCore version. Please update the script, or edit it for the newest OpenCore versions.")  
