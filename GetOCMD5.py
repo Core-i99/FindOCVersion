@@ -19,11 +19,7 @@
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see <http://www.gnu.org/licenses/>.
 
-#TODO
-# - get both release and debug versions
-# - store the md5 checksums in a database file
-
-import datetime,  platform, os, urllib, shutil, zipfile, hashlib, getpass
+import datetime,  platform, os, urllib, shutil, zipfile, hashlib, getpass, json
 from pydoc import Doc
 from urllib.request import urlopen
 
@@ -83,8 +79,6 @@ else:
     if debug == 1:    
         print("DocPath: " + DocPath)
 
-print("Path: " + path)
-
 if platform.system() == ('Windows'):  # If system is running Windows
     fixedinputpath = path.replace('"', ' ').strip() # Remove quotation marks from the inputfile string. Otherwise checkinputfile will return false.
     fixedinputpath2 = fixedinputpath
@@ -113,13 +107,15 @@ if checkpath == 0:
   print("\nCouldn't find the specified path where OpenCore.zip needs to be saved! Script will now exit.")
    
 if platform.system() == ("Windows"):  # If system is running Windows
-        OCZip_path = fixedinputpath2 + "\OpenCore-" + OCversion + "-RELEASE.zip" # path to write OpenCore.zip
+        OCRELZip_path = fixedinputpath2 + "\OpenCore-" + OCversion + "-RELEASE.zip" # path to write OpenCore.zip
+        OCDBGZip_path = fixedinputpath2 + "\OpenCore-" + OCversion + "-DEBUG.zip" # path to write OpenCore.zip
 if platform.system() == ("Darwin"): #If system is running macOS
-        OCZip_path = fixedinputpath2 + "/OpenCore-" + OCversion + "-RELEASE.zip" # path to write OpenCore.zip        
+        OCRELZip_path = fixedinputpath2 + "/OpenCore-" + OCversion + "-RELEASE.zip" # path to write OpenCore.zip        
+        OCDBGZip_path = fixedinputpath2 + "/OpenCore-" + OCversion + "-DEBUG.zip" # path to write OpenCore.zip      
 
 if debug == 1:
     print("\nPath: " + fixedinputpath2)
-    print("\nFixed path: " + OCZip_path)
+    print("\nFixed path: " + OCRELZip_path)
     
 try:
     site = urllib.request.urlopen(urlrelease)
@@ -128,51 +124,98 @@ try:
 except:
     print("\nFailed to download file")
     
-download = urllib.request.urlretrieve(urlrelease, OCZip_path)
+download = urllib.request.urlretrieve(urlrelease, OCRELZip_path)
+download = urllib.request.urlretrieve(urldebug, OCDBGZip_path)
 if debug == 1:
     print ("\nDownloaded the file")
 
 # Create tmp directory
-temppath = fixedinputpath2 + '/tmp'
-
-if os.path.exists(temppath):
-    shutil.rmtree(temppath)
+RELtemppath = fixedinputpath2 + '/tmp' + " RELEASE"
+DBGtemppath = fixedinputpath2 + '/tmp' + " DEBUG"
+if os.path.exists(RELtemppath):
+    shutil.rmtree(RELtemppath) # remove existing tmp folder
     if debug == 1:
-      print("\nFound an existing tmp directory.")
-      print("\nRemoved existing tmp folder.")
+      print("\nFound an existing RELEASE tmp directory.")
+      print("\nRemoved existing  RELEASE tmp folder.")
 
-os.makedirs(temppath)
-if debug == 1:
-    print("\nCreated tmp directory")
+if os.path.exists(DBGtemppath):
+    shutil.rmtree(DBGtemppath) # remove existing tmp folder
+    if debug == 1:
+      print("\nFound an existing DEBUG tmp directory.")
+      print("\nRemoved existing DEBUG tmp folder.")      
 
 # Unzip downloaded OpenCore.zip
-with zipfile.ZipFile(OCZip_path, 'r') as zip_ref:
-    zip_ref.extractall(temppath)
+with zipfile.ZipFile(OCRELZip_path, 'r') as zip_REL:
+    zip_REL.extractall(RELtemppath)
+with zipfile.ZipFile(OCDBGZip_path, 'r') as zip_DBG:
+    zip_DBG.extractall(DBGtemppath)    
 if debug == 1:
     print("\nUnzipped the OpenCore.zip for to tmp directory")    
 
 # Finally! Get the MD5 checksum
 if OCversion >= "0.6.2": # Since OC 0.6.2 the X64 folder is used
     if platform.system() == ("Windows"): # If system is running Windows
-        OpenCoreEFIFile = temppath + "\X64\EFI\OC\OpenCore.efi"    
+        OpenCoreEFIFileREL = RELtemppath + "\X64\EFI\OC\OpenCore.efi"    
+        OpenCoreEFIFileDBG = DBGtemppath + "\X64\EFI\OC\OpenCore.efi" 
     if platform.system() == ("Darwin"): # If system is running macOS
-        OpenCoreEFIFile = temppath + "/X64/EFI/OC/OpenCore.efi" 
+        OpenCoreEFIFileREL = RELtemppath + "/X64/EFI/OC/OpenCore.efi"
+        OpenCoreEFIFileDBG = DBGtemppath + "/X64/EFI/OC/OpenCore.efi" 
 else:
     if platform.system() == ("Windows"): # If system is running Windows
-        OpenCoreEFIFile = temppath + "\EFI\OC\OpenCore.efi"     
+        OpenCoreEFIFileREL = RELtemppath + "\EFI\OC\OpenCore.efi"     
+        OpenCoreEFIFileDBG = DBGtemppath + "\EFI\OC\OpenCore.efi"  
     if platform.system() == ("Darwin"): # If system is running macOS
-        OpenCoreEFIFile = temppath + "/EFI/OC/OpenCore.efi"  
+        OpenCoreEFIFileREL = RELtemppath + "/EFI/OC/OpenCore.efi"  
+        OpenCoreEFIFileDBG = DBGtemppath + "/EFI/OC/OpenCore.efi" 
      
 if debug == 1:
-    print("\nOpenCore.efi file: " + OpenCoreEFIFile)
+    print("\nOpenCore.efi RELEASE file: " + OpenCoreEFIFileREL)
+    print("\nOpenCore.efi DEBUG file: " + OpenCoreEFIFileDBG)
 
-md5_hash = hashlib.md5()
-a_file = open(OpenCoreEFIFile, "rb")
-content = a_file.read()
-md5_hash.update(content)
-digest = md5_hash.hexdigest()
+# RELEASE
+md5_hashREL = hashlib.md5()
+REL_file = open(OpenCoreEFIFileREL, "rb")
+content = REL_file.read()
+md5_hashREL.update(content)
+RELdigest = md5_hashREL.hexdigest()
 
-print("\n\nmd5 checksum of OpenCore.efi: " + digest)
+# Debug
+md5_hashDBG = hashlib.md5()
+DBG_file = open(OpenCoreEFIFileDBG, "rb")
+content = DBG_file.read()
+md5_hashDBG.update(content)
+DBGdigest = md5_hashDBG.hexdigest()
+
+print("\n\nMD5 checksum of RELEASE OpenCore.efi: " + RELdigest)
+
+print("\n\nMD5 checksum of DEBUG OpenCore.efi: " + DBGdigest)
+
+# Write to database
+writedatabase = input('\n\nWould you like to write the MD5 checksum to the database? (default = yes) Options: Y or N: ' )
+
+if writedatabase in ['no', 'No', 'N', 'n']:
+  if debug == 1:
+      print("\nYou didn't choose to write the MD5 checksum to the database")
+else:
+    print("\nWriting to database...")
+    # Read database file
+    with open('Database.json') as file:
+        database = file.read()
+    # Parse json file
+    databasedata = json.loads(database) 
+
+    valueREL = "OC %s RELEASE" % (OCversion)
+    valueDBG = "OC %s DEBUG" % (OCversion)
+
+    if debug == 1:
+        print("\nOC RELEASE name for database: " + valueREL)
+        print("\nOC DEBUG name for database: " + valueDBG)
+
+    databasedata[RELdigest] = valueREL 
+    databasedata[DBGdigest] = valueDBG
+
+    with open('Database.json', 'w') as file: # Open the database in write mode as file
+        json.dump(databasedata, file, indent=4) # write json data to file with 4 spaces in the beginning of a line       
 
 # End of script
 print("\n\n\n\n\nThanks for using Get OC MD5 " + Script_Version)
