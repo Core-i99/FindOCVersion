@@ -1,2 +1,1 @@
 - Make a gui app based on tkinter
-- Support OpenCore versions from the first release to latest in the database
