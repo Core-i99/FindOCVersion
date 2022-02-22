@@ -96,8 +96,6 @@ with open('Database.json') as file:
 
 # Parse json file
 databasedata = json.loads(database)
-if debug == 1:
-    print("Database data: ", databasedata)
 
 print("\nOpencore Version: ", end = '')
 
