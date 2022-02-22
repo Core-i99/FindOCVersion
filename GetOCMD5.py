@@ -160,13 +160,23 @@ if OCversion >= "0.6.2": # Since OC 0.6.2 the X64 folder is used
     if platform.system() == ("Darwin"): # If system is running macOS
         OpenCoreEFIFileREL = RELtemppath + "/X64/EFI/OC/OpenCore.efi"
         OpenCoreEFIFileDBG = DBGtemppath + "/X64/EFI/OC/OpenCore.efi" 
-else:
+elif OCversion >= "0.0.4":
     if platform.system() == ("Windows"): # If system is running Windows
         OpenCoreEFIFileREL = RELtemppath + "\EFI\OC\OpenCore.efi"     
         OpenCoreEFIFileDBG = DBGtemppath + "\EFI\OC\OpenCore.efi"  
     if platform.system() == ("Darwin"): # If system is running macOS
         OpenCoreEFIFileREL = RELtemppath + "/EFI/OC/OpenCore.efi"  
         OpenCoreEFIFileDBG = DBGtemppath + "/EFI/OC/OpenCore.efi" 
+elif OCversion <= "0.0.3":
+    if platform.system() == ("Windows"): # If system is running Windows
+        OpenCoreEFIFileREL = RELtemppath + "\OC\OpenCore.efi"     
+        OpenCoreEFIFileDBG = DBGtemppath + "\OC\OpenCore.efi"  
+    if platform.system() == ("Darwin"): # If system is running macOS
+        OpenCoreEFIFileREL = RELtemppath + "/OC/OpenCore.efi"  
+        OpenCoreEFIFileDBG = DBGtemppath + "/OC/OpenCore.efi"   
+else: 
+    print("Found an unknown version of OpenCore")
+    exit()              
      
 if debug == 1:
     print("\nOpenCore.efi RELEASE file: " + OpenCoreEFIFileREL)
