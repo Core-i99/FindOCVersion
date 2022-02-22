@@ -22,7 +22,7 @@
 #TODO
 # - Get MD5 checksums from a database file
 
-import hashlib, os, datetime, platform
+import hashlib, os, datetime, platform, json
 
 Script_Version = "V1.0" 
 debug = 0
@@ -90,51 +90,22 @@ digest = md5_hash.hexdigest()
 if debug == 1:
     print("\nmd5 checksum: " + digest)
 
-print("\nOpencore Version: ", end = '')
-if digest == "25b357c3b0d7842e1bb99c18d1367fc0":   # 0.7.8 REL
-    print("0.7.8 RELEASE")
-elif digest == "7de24a3b50a581765a211fa45055214b": # 0.7.8 DEB
-    print("0.7.8 DEBUG")
-elif digest == "236d5622b556c56888dae3410dbcf2de": # 0.7.7 REL
-    print("0.7.7 RELEASE") 
-elif digest == "7c09a5bd5c1554881b0acd1594b971be": # 0.7.7 DEB
-    print("0.7.7 DEBUG")     
-elif digest == "e8a18dd8bc56ade19eee855d3caad928": # 0.7.6 REL
-    print("0.7.6 RELEASE")     
-elif digest == "a0f63021d1605fe580eea882f3760823": # 0.7.6 DEB
-    print("0.7.6 DEBUG")    
-elif digest == "f4ee8bbaf27fcb34367d6192b5db1eec": # 0.7.5 REL
-    print("0.7.5 RELEASE")     
-elif digest == "5be2c6ee90d95f786e8d511ce2124055": # 0.7.5 DEB
-    print("0.7.5 DEBUG")   
-elif digest == "81a2ac329da9548da0ab0cb140eb9661": # 0.7.4 REL
-    print("0.7.4 RELEASE")     
-elif digest == "95497990f2dde60661ec66c57f55a28b": # 0.7.4 DEB
-    print("0.7.4 DEBUG")   
-elif digest == "95a3f5b7df5e3aee7f44588d56fe1cd3": # 0.7.3 REL
-    print("0.7.3 RELEASE")     
-elif digest == "bda0fed36bdb3301c1b788f8259c74fe": # 0.7.3 DEB
-    print("0.7.3 DEBUG")  
-elif digest == "1314c4f3220539d997637fa0b57026b5": # 0.7.2 REL
-    print("0.7.2 RELEASE")     
-elif digest == "9848c07e173aa448ea701b3ed0e210b5": # 0.7.2 DEB
-    print("0.7.2 DEBUG")  
-elif digest == "1160d5af5f29ef17c2c870862f2a4728": # 0.7.1 REL
-    print("0.7.1 RELEASE")     
-elif digest == "9001a6107a0db056e896cf68c26471c8": # 0.7.1 DEB
-    print("0.7.1 DEBUG")  
-elif digest == "67406c9656c353aa8919c8930c897c3c": # 0.7.0 REL
-    print("0.7.0 RELEASE")     
-elif digest == "26f6d78711ec93afededcee86abe7c8d": # 0.7.0 DEB
-    print("0.7.0 DEBUG")    
-elif digest == "33dc9e8185b66f4ab466890590011351": # 0.6.9 REL
-    print("0.6.9 RELEASE")     
-elif digest == "5b8545e031bd9341f7bc20fe313cc390": # 0.6.9 DEB
-    print("0.6.9 DEBUG")    
+# Read database file
+with open('Database.json') as file:
+    database = file.read()
 
-else: 
-    print("Could not find OpenCore version. Please update the script, or edit it for the newest OpenCore versions.")  
-    exit()  
+# Parse json file
+databasedata = json.loads(database)
+if debug == 1:
+    print("Database data: ", databasedata)
+
+print("\nOpencore Version: ", end = '')
+
+if digest not in databasedata:
+    print("OC Version not in database. Please update the database using GetOCMD5 for the latest OpenCore version. Note that only Opencore Releases from GitHub are supported!")
+    exit()
+
+print(databasedata[digest])
 
 #end of script
 print("\n\n\n\n\nThanks for using Find OC Version " + Script_Version)

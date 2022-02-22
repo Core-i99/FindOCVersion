@@ -15,3 +15,4 @@ Script to find the Opencore version from an EFI folder based on MD5 checksum
 - Unzip the downloaded file
 - cd `FindOCVersion_directory`
 - python3 ./GetOCMD5.py
+- You might want to turn off Windows Defender, sometimes it will think OpenCore is a virus.
