@@ -19,9 +19,6 @@
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see <http://www.gnu.org/licenses/>.
 
-#TODO
-# - Get MD5 checksums from a database file
-
 import hashlib, os, datetime, platform, json
 
 Script_Version = "V1.0" 
