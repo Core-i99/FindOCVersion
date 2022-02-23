@@ -19,101 +19,121 @@
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see <http://www.gnu.org/licenses/>.
 
-import hashlib, os, datetime, platform, json
+import hashlib, json, tkinter.messagebox, tkinter, datetime, os
+from tkinter import filedialog
 
-Script_Version = "V1.0" 
+Script_Version = "V1.2" 
 debug = 0
 
-def clearConsole(): #clear console
-    command = 'clear'
-    if platform.system() == ("Windows"):  # If system is running Windows
-        command = 'cls'
-    if platform.system() == ("Darwin"): #If system is running macOS
-        command = 'clear'    
-    os.system(command)
+root = tkinter.Tk()  # Creating instance of tkinter class
+root.title("Find OC Version")
+root.resizable(False, False)  # Disable rootdow resizing
 
-# heading
-terminalwith = os.get_terminal_size().columns
-print("\033[1;31m") # change text color to red
-clearConsole()
-print(("# Welcome to Find OC Version - Script to find the OpenCore version of an OpenCore EFI folder #\n").center(terminalwith))
+fm1 = tkinter.Frame(root)
+fm2 = tkinter.Frame(root)
+fm3 = tkinter.Frame(root)
+fm4 = tkinter.Frame(root)
 
-# debug mode
-setdebug = input('Would you like to enable debug mode? (default = no) '+ "Options: Y or N \n" )
-if setdebug in ['yes', 'Yes', 'Y', 'y']:
-  debug = 1
-  print("\n" + "Enabled debug mode")
-else:
-  debug = 0
+def openFileClicked():
+    OcVersionLabel['text'] = ''
+    filetypes = [
+        ('EFI files', '*.efi')
+    ]
+    inputfile = filedialog.askopenfilename(filetypes=filetypes)
+    if inputfile != '': # if inputfile isn't an empty string
+        if debug == 1:
+            print("Selected OpenCore.efi: " + inputfile)
+            print("Database location: " + DatabaseLocation)
 
-inputfile = input("\nDrag & drop OpenCore.efi: ").strip()
+        md5_hash = hashlib.md5()
+        a_file = open(inputfile, "rb")
+        content = a_file.read()
+        md5_hash.update(content)
+        digest = md5_hash.hexdigest()
 
+        if debug == 1:
+            print("OpenCore.efi MD5 checksum: " + digest)
+
+        # Read database file
+        with open(DatabaseLocation) as file:
+            database = file.read()
+
+        # Parse json file
+        databasedata = json.loads(database)
+
+        if digest not in databasedata:
+            tkinter.messagebox.showwarning( "OC version not found in database", "OC Version not found in database!\n\nPlease update the database using GetOCMD5 for the latest OpenCore versions.\n\nNote that only Opencore Releases from GitHub are supported.")
+        
+        OcVersionLabel['text'] = 'OC Version ' + databasedata[digest]
+
+    elif debug == 1:
+            print("Nothing Selected")    
+
+def showinfo():
+     tkinter.messagebox.showinfo("About", "Script to find the OpenCore version from an OpenCore EFI folder.\n\nScript version: %s\n " % (Script_Version))
+
+def exitwindow():
+    print("\nThanks for using Find OC Version " + Script_Version)
+    print("Written By Core i99 - © Stijn Rombouts 2021\n")
+    print("Check out my GitHub:\n")
+    print("https://github.com/Core-i99/\n\n")
+
+    hour = datetime.datetime.now().time().hour
+    if hour > 3 and hour < 12:
+        print("Have a nice morning!\n\n")
+    elif hour >= 12 and hour < 17:
+        print("Have a nice afternoon!\n\n")
+    elif hour >= 17 and hour < 21:
+        print("Have a nice evening!\n\n")
+    else:
+        print("Have a nice night! (And don't forget to sleep!)\n\n")  
+    exit()       
+
+def ChangeDebug():  
+    global debug
+    if debug == 0:
+        debug = 1
+        print("Enabled debug mode")  
+        DebugButton['text'] = 'Disable debug mode'
+    elif debug == 1:
+        debug = 0
+        DebugButton['text'] = 'Enable debug mode'
+
+def centerwindow():
+    app_height = 200
+    app_width = 500
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    x_cordinate = int((screen_width/2) - (app_width/2))
+    y_cordinate = int((screen_height/2) - (app_height/2))
+    root.geometry("{}x{}+{}+{}".format(app_width, app_height, x_cordinate, y_cordinate))
+
+centerwindow() #center the gui window on the screen
+
+# working directory
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+working_dir = os.getcwd()
+DatabaseLocation = working_dir + '\Database.json'
 if debug == 1:
-    print("\nDetected platform: " + platform.system()) # Print the current platform
+    print("\nCurrent working directory: ", working_dir)
+    print("Database Location: "+ DatabaseLocation)
 
-if platform.system() == ('Windows'):  # If system is running Windows
-    fixedinputfile = inputfile.replace('"', ' ').strip() # Remove quotation marks from the inputfile string. Otherwise checkinputfile will return false.
-    if debug == 1:
-        print("\nDetected Windows system")
+# Buttons and labels
+tkinter.Button(fm1, text='Select OpenCore.efi', command=openFileClicked).pack(side='left', expand=1, padx=10)
+tkinter.Button(fm3, text="About", command=showinfo).pack(side='left', expand=1, padx=10)
 
-elif platform.system() == ("Darwin"): #If system is running macOS
-    fixedinputfile = inputfile.replace("\\",  '')  # Remove the backslashes from the inputfile string. Otherwise checkinputfile will return false.
-    if debug == 1:
-        print("\nDetected macOS system")
-else:
-    print("\nCould not detect Windows or macOS Operating System. This script currently only supports Windows and macOS")
-    exit()
+DebugButton = tkinter.Button(fm3, text='Enable debug mode', command=ChangeDebug)
+DebugButton.pack(side='left', expand=1, padx=10)  
 
-if debug == 1:
-    print("\nfixed input file: " + fixedinputfile)
+OcVersionLabel = tkinter.Label(fm2, text='')
+OcVersionLabel.pack(side='left', expand=1, padx=10)
 
-checkinputfile = os.path.isfile (fixedinputfile)
+tkinter.Button(fm4, text='Exit', command=exitwindow).pack(side='left', expand=1, padx=10)
 
-if debug == 1:
-    if checkinputfile == 1:
-        print("Found the input file")
+# pack the frames
+fm1.pack(pady=10)
+fm2.pack(pady=10)
+fm3.pack(pady=10)
+fm4.pack(pady=10)
 
-if checkinputfile == 0:
-  print("Couldn't find the file")
-  print("Script will now exit")
-  exit()  
-
-md5_hash = hashlib.md5()
-a_file = open(fixedinputfile, "rb")
-content = a_file.read()
-md5_hash.update(content)
-digest = md5_hash.hexdigest()
-
-if debug == 1:
-    print("\nmd5 checksum: " + digest)
-
-# Read database file
-with open('Database.json') as file:
-    database = file.read()
-
-# Parse json file
-databasedata = json.loads(database)
-
-print("\nOpencore Version: ", end = '')
-
-if digest not in databasedata:
-    print("OC Version not in database. Please update the database using GetOCMD5 for the latest OpenCore version. Note that only Opencore Releases from GitHub are supported!")
-    exit()
-
-print(databasedata[digest])
-
-#end of script
-print("\n\n\n\n\nThanks for using Find OC Version " + Script_Version)
-print("Written By Core i99 - © Stijn Rombouts 2021\n")
-print("Check out my GitHub:\n")
-print("https://github.com/Core-i99/\n\n")
-
-hour = datetime.datetime.now().time().hour
-if hour > 3 and hour < 12:
-    print("Have a nice morning!\n\n")
-elif hour >= 12 and hour < 17:
-    print("Have a nice afternoon!\n\n")
-elif hour >= 17 and hour < 21:
-    print("Have a nice evening!\n\n")
-else:
-    print("Have a nice night! (And don't forget to sleep!)\n\n")
+root.mainloop()
