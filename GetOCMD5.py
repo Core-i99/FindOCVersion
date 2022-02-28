@@ -19,226 +19,221 @@
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see <http://www.gnu.org/licenses/>.
 
-import datetime,  platform, os, urllib, shutil, zipfile, hashlib, getpass, json
-from pydoc import Doc
+import hashlib, json, tkinter.messagebox, tkinter, datetime, os, urllib, shutil, zipfile
 from urllib.request import urlopen
+from tkinter.messagebox import askyesno
 
-Script_Version = "V0.1"
+Version = "V1.2" 
 debug = 0
-def clearConsole(): #clear console
-    command = 'clear'
-    if platform.system() == ("Windows"):  # If system is running Windows
-        command = 'cls'
-    if platform.system() == ("Darwin"): #If system is running macOS
-        command = 'clear'    
-    os.system(command)
+match = 0
 
-clearConsole()
-print('\nWelcome to Get OC MD5! A tool to get OpenCore.efi MD5 checksum\n')
+root = tkinter.Tk()  # Creating instance of tkinter class
+root.title("Get OC MD5")
+root.resizable(False, False)  # Disable rootwindow resizing
 
-# debug mode
-setdebug = input('Would you like to enable debug mode? (default = no) '+ "Options: Y or N \n" )
-if setdebug in ['yes', 'Yes', 'Y', 'y']:
-  debug = 1
-  print("\n" + "Enabled debug mode\n")
-else:
-  debug = 0
+fm1 = tkinter.Frame(root)
+fm2 = tkinter.Frame(root)
+fm3 = tkinter.Frame(root)
+fm4 = tkinter.Frame(root) 
+fm5 = tkinter.Frame(root) 
+fm6 = tkinter.Frame(root) 
 
-OCversion = input("Which OpenCore version do you want to download? ")
-
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+working_dir = os.getcwd()
+DatabaseLocation = working_dir + '/Database.json'
 if debug == 1:
-    print("\nChosen version: " + OCversion)
+    print("\nCurrent working directory: ", working_dir)
+    print("Database Location: " + DatabaseLocation)
 
-if OCversion >= "0.0.1" and OCversion <= "0.0.3":
-    urlrelease = "https://github.com/acidanthera/OpenCorePkg/releases/download/" + OCversion  + "/OpenCore-V"+ OCversion + "-RELEASE.zip"
-    urldebug = "https://github.com/acidanthera/OpenCorePkg/releases/download/" + OCversion  + "/OpenCore-v"+ OCversion + "-DEBUG.zip"
+def showinfo():
+     tkinter.messagebox.showinfo("About", "Script to find OpenCore bootloader MD5 checksum from OpenCore.efi downloaded from GitHub releases.\n\nVersion: %s\n " % (Version))
 
-elif OCversion >= "0.5.0" and OCversion <= "0.7.8" or OCversion == "0.0.4":
-    urlrelease = "https://github.com/acidanthera/OpenCorePkg/releases/download/" + OCversion  + "/OpenCore-"+ OCversion + "-RELEASE.zip" # from version 0.0.4 and up "v" is removed from the download url
-    urldebug = "https://github.com/acidanthera/OpenCorePkg/releases/download/" + OCversion  + "/OpenCore-"+ OCversion + "-DEBUG.zip"   
+def exitwindow():
+    print("\nThanks for using Get OC MD5 " + Version)
+    print("Written By Core i99 - © Stijn Rombouts 2021\n")
+    print("Check out my GitHub:\n")
+    print("https://github.com/Core-i99/\n\n")
+    hour = datetime.datetime.now().time().hour
+    if hour > 3 and hour < 12:
+        print("Have a nice morning!\n\n")
+    elif hour >= 12 and hour < 17:
+        print("Have a nice afternoon!\n\n")
+    elif hour >= 17 and hour < 21:
+        print("Have a nice evening!\n\n")
+    else:
+        print("Have a nice night! (And don't forget to sleep!)\n\n")  
+    exit()       
 
-else:
-    print("Can't get this version from GitHub!")  
-    exit()  
-
-if debug == 1:
-    print ("\nOC release URL: " + urlrelease)  
-    print ("\nOC debug URL: " + urldebug) 
-
-custompath = input('\nWould you like to use a custom path for the OpenCore downloads? By default the script will store the OpenCore downloads in the documents folder. (default = no) '+ "Options: Y or N \n" )
-if custompath in ['yes', 'Yes', 'Y', 'y']:
-  if debug == 1:
-        print("\nYou chose to use a custom path")  
-  path = input("\nDrag & drop the path where you want to store OpenCore downloads: ")
-
-else:
-    DocPath = os.path.expanduser('~/Documents')
-    path = DocPath + "/GetOCMD5"
-    if not os.path.exists(path):
-        os.makedirs(path)
-    if debug == 1:    
-        print("DocPath: " + DocPath)
-
-if platform.system() == ('Windows'):  # If system is running Windows
-    fixedinputpath = path.replace('"', ' ').strip() # Remove quotation marks from the inputfile string. Otherwise checkinputfile will return false.
-    fixedinputpath2 = fixedinputpath
+def start():
+    global match
+    OCVersion = OCVersionVar.get()
     if debug == 1:
-        print("\nDetected Windows system")
+        print("Entered OC Version: " , OCVersion)
+    if OCVersion == "":
+        tkinter.messagebox.showerror("ERROR", "No OpenCore version entered!")
+    elif OCVersion >= "0.0.1" and OCVersion <= "0.0.3":
+        urlrelease = "https://github.com/acidanthera/OpenCorePkg/releases/download/" + OCVersion  + "/OpenCore-V"+ OCVersion + "-RELEASE.zip"
+        urldebug = "https://github.com/acidanthera/OpenCorePkg/releases/download/" + OCVersion  + "/OpenCore-v"+ OCVersion + "-DEBUG.zip"
+        match = 1
+        if debug == 1:
+            print ("\nOC release URL: " + urlrelease)  
+            print ("\nOC debug URL: " + urldebug) 
+    elif OCVersion >= "0.5.0" and OCVersion <= "0.7.8" or OCVersion == "0.0.4":
+        urlrelease = "https://github.com/acidanthera/OpenCorePkg/releases/download/" + OCVersion  + "/OpenCore-"+ OCVersion + "-RELEASE.zip" # from version 0.0.4 and up "v" is removed from the download url
+        urldebug = "https://github.com/acidanthera/OpenCorePkg/releases/download/" + OCVersion  + "/OpenCore-"+ OCVersion + "-DEBUG.zip"   
+        match = 1
+    else:
+        tkinter.messagebox.showerror("ERROR", "Can't get the entered OpenCore version from GitHub!")
+        match = 0
 
-elif platform.system() == ("Darwin"): #If system is running macOS
-    fixedinputpath = path.replace("\\",  '') # Remove the backslashes from the inputfile string. Otherwise checkinputfile will return false.
-    fixedinputpath2 = fixedinputpath.replace(" ",  "") # Remove the spaces from the inputfile string. Otherwise checkinputfile will return false.
-    if debug == 1:
-        print("\nDetected macOS system")
-else:
-    print("\nCouldn't detect Windows or macOS Operating System. This script currently only supports Windows and macOS! Script will now exit.")
-    exit()
+    if match == 1 :
+        if debug == 1:
+            print ("\nOC release URL: " + urlrelease)  
+            print ("\nOC debug URL: " + urldebug) 
+        DocPath = os.path.expanduser('~/Documents')# Get Documents folder path
 
-if debug == 1:
-    print("\nfixed input path: " + fixedinputpath2)
+        # Create GetOCMD5 folder
+        path = DocPath + "/GetOCMD5"
+        if not os.path.exists(path):
+            os.makedirs(path)
+        if debug == 1:    
+            print("DocPath: " + DocPath)
 
-checkpath = os.path.isdir (fixedinputpath2)
+        # Create paths for OpenCore zips
+        OCRELZip_path = path + "/OpenCore-" + OCVersion + "-RELEASE.zip" # path to write OpenCore.zip        
+        OCDBGZip_path = path + "/OpenCore-" + OCVersion + "-DEBUG.zip" # path to write OpenCore.zip   
+        if debug == 1:    
+            print("OCRELZip path: " + OCRELZip_path)
+            print("OCDBGZip path: " + OCDBGZip_path)
 
-if debug == 1:
-    if checkpath == 1:
-        print("\nFound the path")
+        # Check if internet connection works
+        try:
+            urllib.request.urlopen(urlrelease)
+            if debug == 1:
+                print("\nFound the url")
+        except:
+            tkinter.messagebox.showerror("ERROR", "Failed to download OpenCore from GitHub! Check your internet connection!") 
 
-if checkpath == 0:
-  print("\nCouldn't find the specified path where OpenCore.zip needs to be saved! Script will now exit.")
-   
-if platform.system() == ("Windows"):  # If system is running Windows
-        OCRELZip_path = fixedinputpath2 + "\OpenCore-" + OCversion + "-RELEASE.zip" # path to write OpenCore.zip
-        OCDBGZip_path = fixedinputpath2 + "\OpenCore-" + OCversion + "-DEBUG.zip" # path to write OpenCore.zip
-if platform.system() == ("Darwin"): #If system is running macOS
-        OCRELZip_path = fixedinputpath2 + "/OpenCore-" + OCversion + "-RELEASE.zip" # path to write OpenCore.zip        
-        OCDBGZip_path = fixedinputpath2 + "/OpenCore-" + OCversion + "-DEBUG.zip" # path to write OpenCore.zip      
+        # Download OpenCore from GitHub
+        urllib.request.urlretrieve(urlrelease, OCRELZip_path)
+        urllib.request.urlretrieve(urldebug, OCDBGZip_path)
+        if debug == 1:
+            print ("\nDownloaded the file")    
+        
+        # Create tmp directory
+        RELtemppath = path + '/tmp' + " RELEASE"
+        DBGtemppath = path + '/tmp' + " DEBUG"
+        if os.path.exists(RELtemppath):
+            shutil.rmtree(RELtemppath) # remove existing tmp folder
+            if debug == 1:
+                print("\nFound an existing RELEASE tmp directory.")
+                print("\nRemoved existing  RELEASE tmp folder.")
+        if os.path.exists(DBGtemppath):
+            shutil.rmtree(DBGtemppath) # remove existing tmp folder
+            if debug == 1:
+                print("\nFound an existing DEBUG tmp directory.")
+                print("\nRemoved existing DEBUG tmp folder.")   
 
-if debug == 1:
-    print("\nPath: " + fixedinputpath2)
-    print("\nFixed path: " + OCRELZip_path)
-    
-try:
-    site = urllib.request.urlopen(urlrelease)
-    if debug == 1:
-        print("\nFound the url")
-except:
-    print("\nFailed to download file")
-    
-download = urllib.request.urlretrieve(urlrelease, OCRELZip_path)
-download = urllib.request.urlretrieve(urldebug, OCDBGZip_path)
-if debug == 1:
-    print ("\nDownloaded the file")
+        # Unzip downloaded OpenCore.zip
+        with zipfile.ZipFile(OCRELZip_path, 'r') as zip_REL:
+            zip_REL.extractall(RELtemppath)
+        with zipfile.ZipFile(OCDBGZip_path, 'r') as zip_DBG:
+            zip_DBG.extractall(DBGtemppath)    
+        if debug == 1:
+            print("\nUnzipped the OpenCore.zip for to tmp directory")    
 
-# Create tmp directory
-RELtemppath = fixedinputpath2 + '/tmp' + " RELEASE"
-DBGtemppath = fixedinputpath2 + '/tmp' + " DEBUG"
-if os.path.exists(RELtemppath):
-    shutil.rmtree(RELtemppath) # remove existing tmp folder
-    if debug == 1:
-      print("\nFound an existing RELEASE tmp directory.")
-      print("\nRemoved existing  RELEASE tmp folder.")
-
-if os.path.exists(DBGtemppath):
-    shutil.rmtree(DBGtemppath) # remove existing tmp folder
-    if debug == 1:
-      print("\nFound an existing DEBUG tmp directory.")
-      print("\nRemoved existing DEBUG tmp folder.")      
-
-# Unzip downloaded OpenCore.zip
-with zipfile.ZipFile(OCRELZip_path, 'r') as zip_REL:
-    zip_REL.extractall(RELtemppath)
-with zipfile.ZipFile(OCDBGZip_path, 'r') as zip_DBG:
-    zip_DBG.extractall(DBGtemppath)    
-if debug == 1:
-    print("\nUnzipped the OpenCore.zip for to tmp directory")    
-
-# Finally! Get the MD5 checksum
-if OCversion >= "0.6.2": # Since OC 0.6.2 the X64 folder is used
-    if platform.system() == ("Windows"): # If system is running Windows
-        OpenCoreEFIFileREL = RELtemppath + "\X64\EFI\OC\OpenCore.efi"    
-        OpenCoreEFIFileDBG = DBGtemppath + "\X64\EFI\OC\OpenCore.efi" 
-    if platform.system() == ("Darwin"): # If system is running macOS
-        OpenCoreEFIFileREL = RELtemppath + "/X64/EFI/OC/OpenCore.efi"
-        OpenCoreEFIFileDBG = DBGtemppath + "/X64/EFI/OC/OpenCore.efi" 
-elif OCversion >= "0.0.4":
-    if platform.system() == ("Windows"): # If system is running Windows
-        OpenCoreEFIFileREL = RELtemppath + "\EFI\OC\OpenCore.efi"     
-        OpenCoreEFIFileDBG = DBGtemppath + "\EFI\OC\OpenCore.efi"  
-    if platform.system() == ("Darwin"): # If system is running macOS
-        OpenCoreEFIFileREL = RELtemppath + "/EFI/OC/OpenCore.efi"  
-        OpenCoreEFIFileDBG = DBGtemppath + "/EFI/OC/OpenCore.efi" 
-elif OCversion <= "0.0.3":
-    if platform.system() == ("Windows"): # If system is running Windows
-        OpenCoreEFIFileREL = RELtemppath + "\OC\OpenCore.efi"     
-        OpenCoreEFIFileDBG = DBGtemppath + "\OC\OpenCore.efi"  
-    if platform.system() == ("Darwin"): # If system is running macOS
-        OpenCoreEFIFileREL = RELtemppath + "/OC/OpenCore.efi"  
-        OpenCoreEFIFileDBG = DBGtemppath + "/OC/OpenCore.efi"   
-else: 
-    print("Found an unknown version of OpenCore")
-    exit()              
+        # Finally! Get the MD5 checksum
+        if OCVersion >= "0.6.2": # Since OC 0.6.2 the X64 folder is used
+            OpenCoreEFIFileREL = RELtemppath + "/X64/EFI/OC/OpenCore.efi"
+            OpenCoreEFIFileDBG = DBGtemppath + "/X64/EFI/OC/OpenCore.efi" 
+        elif OCVersion >= "0.0.4":
+            OpenCoreEFIFileREL = RELtemppath + "/EFI/OC/OpenCore.efi"  
+            OpenCoreEFIFileDBG = DBGtemppath + "/EFI/OC/OpenCore.efi" 
+        elif OCVersion <= "0.0.3":
+            OpenCoreEFIFileREL = RELtemppath + "/OC/OpenCore.efi"  
+            OpenCoreEFIFileDBG = DBGtemppath + "/OC/OpenCore.efi"            
      
-if debug == 1:
-    print("\nOpenCore.efi RELEASE file: " + OpenCoreEFIFileREL)
-    print("\nOpenCore.efi DEBUG file: " + OpenCoreEFIFileDBG)
+        if debug == 1:
+            print("\nOpenCore.efi RELEASE file: " + OpenCoreEFIFileREL)
+            print("\nOpenCore.efi DEBUG file: " + OpenCoreEFIFileDBG)    
 
-# RELEASE
-md5_hashREL = hashlib.md5()
-REL_file = open(OpenCoreEFIFileREL, "rb")
-content = REL_file.read()
-md5_hashREL.update(content)
-RELdigest = md5_hashREL.hexdigest()
+        # OC Release MD5 checksum
+        md5_hashREL = hashlib.md5()
+        REL_file = open(OpenCoreEFIFileREL, "rb")
+        content = REL_file.read()
+        md5_hashREL.update(content)
+        RELdigest = md5_hashREL.hexdigest()
 
-# Debug
-md5_hashDBG = hashlib.md5()
-DBG_file = open(OpenCoreEFIFileDBG, "rb")
-content = DBG_file.read()
-md5_hashDBG.update(content)
-DBGdigest = md5_hashDBG.hexdigest()
+        # OC Debug MD5 checksum
+        md5_hashDBG = hashlib.md5()
+        DBG_file = open(OpenCoreEFIFileDBG, "rb")
+        content = DBG_file.read()
+        md5_hashDBG.update(content)
+        DBGdigest = md5_hashDBG.hexdigest()
 
-print("\n\nMD5 checksum of RELEASE OpenCore.efi: " + RELdigest)
+        tkinter.messagebox.showinfo("MD5 checksums", "OpenCore Release %s MD5 checksum: %s\n\nOpenCore Debug %s MD5 checksum: %s" % (OCVersion, RELdigest, OCVersion, DBGdigest))
 
-print("\n\nMD5 checksum of DEBUG OpenCore.efi: " + DBGdigest)
+        SaveToDatabase = askyesno(title='Save to database?', message='Would you like to write the MD5 checksum to the database?')
+        if SaveToDatabase == True:
+            if debug == 1:
+                print("\nWriting to database...")
 
-# Write to database
-writedatabase = input('\n\nWould you like to write the MD5 checksum to the database? (default = yes) Options: Y or N: ' )
+            # Read database file
+            with open(DatabaseLocation) as file:
+                database = file.read()
+            # Parse json file
+            databasedata = json.loads(database) 
 
-if writedatabase in ['no', 'No', 'N', 'n']:
-  if debug == 1:
-      print("\nYou didn't choose to write the MD5 checksum to the database")
-else:
-    print("\nWriting to database...")
-    # Read database file
-    with open('Database.json') as file:
-        database = file.read()
-    # Parse json file
-    databasedata = json.loads(database) 
+            valueREL = "OC %s RELEASE" % (OCVersion)
+            valueDBG = "OC %s DEBUG" % (OCVersion)
 
-    valueREL = "OC %s RELEASE" % (OCversion)
-    valueDBG = "OC %s DEBUG" % (OCversion)
+            if debug == 1:
+                print("\nOC RELEASE name for database: " + valueREL)
+                print("\nOC DEBUG name for database: " + valueDBG)
 
-    if debug == 1:
-        print("\nOC RELEASE name for database: " + valueREL)
-        print("\nOC DEBUG name for database: " + valueDBG)
+            databasedata[RELdigest] = valueREL 
+            databasedata[DBGdigest] = valueDBG
 
-    databasedata[RELdigest] = valueREL 
-    databasedata[DBGdigest] = valueDBG
+            with open('Database.json', 'w') as file: # Open the database in write mode as file
+                json.dump(databasedata, file, indent=4) # write json data to file with 4 spaces in the beginning of a line  
 
-    with open('Database.json', 'w') as file: # Open the database in write mode as file
-        json.dump(databasedata, file, indent=4) # write json data to file with 4 spaces in the beginning of a line       
+def ChangeDebug():  
+    global debug
+    if debug == 0:
+        debug = 1
+        print("Enabled debug mode")  
+        DebugButton['text'] = 'Disable debug mode'
+    elif debug == 1:
+        debug = 0
+        DebugButton['text'] = 'Enable debug mode'
 
-# End of script
-print("\n\n\n\n\nThanks for using Get OC MD5 " + Script_Version)
-print("\nWritten By Core i99 - © Stijn Rombouts 2021\n")
-print("Check out my GitHub:\n")
-print("https://github.com/Core-i99/\n\n")
+def centerwindow():
+    app_height = 200
+    app_width = 500
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    x_cordinate = int((screen_width/2) - (app_width/2))
+    y_cordinate = int((screen_height/2) - (app_height/2))
+    root.geometry("{}x{}+{}+{}".format(app_width, app_height, x_cordinate, y_cordinate))
 
-hour = datetime.datetime.now().time().hour
-if hour > 3 and hour < 12:
-    print("Have a nice morning!\n\n")
-elif hour >= 12 and hour < 17:
-    print("Have a nice afternoon!\n\n")
-elif hour >= 17 and hour < 21:
-    print("Have a nice evening!\n\n")
-else:
-    print("Have a nice night! (And don't forget to sleep!)\n\n")
+centerwindow() # center the gui window on the screen
+
+# Buttons and labels
+OCVersionVar = tkinter.StringVar()  
+tkinter.Button(fm2, text="Start", command=start).pack(side='left', expand=1, padx=10)
+tkinter.Button(fm3, text="About", command=showinfo).pack(side='left', expand=1, padx=10)
+tkinter.Label(fm1, text = "Enter OC Version:").pack(side='left', expand=1, padx=5)
+OCVersionEntry = tkinter.Entry(fm1, textvariable=OCVersionVar).pack()
+DebugButton = tkinter.Button(fm3, text='Enable debug mode', command=ChangeDebug)
+DebugButton.pack(side='left', expand=1, padx=10)  
+tkinter.Button(fm4, text='Exit', command=exitwindow).pack(side='left', expand=1, padx=10)
+
+# pack the frames
+fm1.pack(pady=10)
+fm2.pack(pady=10)
+fm3.pack(pady=10)
+fm4.pack(pady=10)
+fm5.pack(pady=10)
+fm6.pack(pady=10)
+
+root.mainloop()

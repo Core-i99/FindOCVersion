@@ -27,7 +27,7 @@ debug = 0
 
 root = tkinter.Tk()  # Creating instance of tkinter class
 root.title("Find OC Version")
-root.resizable(False, False)  # Disable rootdow resizing
+root.resizable(False, False)  # Disable rootwindow resizing
 
 fm1 = tkinter.Frame(root)
 fm2 = tkinter.Frame(root)
