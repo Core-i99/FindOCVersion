@@ -113,7 +113,7 @@ centerwindow() #center the gui window on the screen
 # working directory
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 working_dir = os.getcwd()
-DatabaseLocation = working_dir + '\Database.json'
+DatabaseLocation = working_dir + '/Database.json'
 if debug == 1:
     print("\nCurrent working directory: ", working_dir)
     print("Database Location: "+ DatabaseLocation)
