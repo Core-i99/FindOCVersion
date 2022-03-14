@@ -78,7 +78,7 @@ def start():
         if debug == 1:
             print ("\nOC release URL: " + urlrelease)  
             print ("\nOC debug URL: " + urldebug) 
-    elif OCVersion >= "0.5.0" and OCVersion <= "0.7.8" or OCVersion == "0.0.4":
+    elif OCVersion >= "0.5.0" or OCVersion == "0.0.4":
         urlrelease = "https://github.com/acidanthera/OpenCorePkg/releases/download/" + OCVersion  + "/OpenCore-"+ OCVersion + "-RELEASE.zip" # from version 0.0.4 and up "v" is removed from the download url
         urldebug = "https://github.com/acidanthera/OpenCorePkg/releases/download/" + OCVersion  + "/OpenCore-"+ OCVersion + "-DEBUG.zip"   
         match = 1
