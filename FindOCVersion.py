@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Script to find OpenCore bootloader version from OpenCore.efi based on md5 checksum
 #

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Script to find OpenCore bootloader MD5 checksum from OpenCore.efi downloaded from GitHub releases
 #
