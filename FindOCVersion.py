@@ -72,7 +72,7 @@ def openFileClicked():
             if (line_no_space in hexdata):
                 FoundOC = True
                 debugPrint(f"OpenCore Version: {databasedata[line]}")
-                OcVersionLabel['text'] = 'OC Version ' + databasedata[line]
+                OcVersionLabel['text'] = f"OC Version {databasedata[line]}"
 
         if (FoundOC == False): showerror("Error", "Couldn't find the version of this OpenCore.efi")
 
@@ -82,7 +82,7 @@ def about():
     showinfo("About", f"Script to find the OpenCore version from an OpenCore EFI folder.\n\nScript version: {Script_Version}\n ")
 
 def exitwindow():
-    print("\nThanks for using Find OC Version " + Script_Version)
+    print(f"\nThanks for using Find OC Version {Script_Version}")
     print("Written By Core i99 - © Stijn Rombouts 2021\n")
     print("Check out my GitHub:\n")
     print("https://github.com/Core-i99/\n\n")
@@ -115,14 +115,14 @@ def centerwindow():
     screen_height = root.winfo_screenheight()
     x_cordinate = int((screen_width/2) - (app_width/2))
     y_cordinate = int((screen_height/2) - (app_height/2))
-    root.geometry("{}x{}+{}+{}".format(app_width, app_height, x_cordinate, y_cordinate))
+    root.geometry(f"{app_width}x{app_height}+{x_cordinate}+{y_cordinate}")
 
 centerwindow() #center the gui window on the screen
 
 # working directory
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 working_dir = os.getcwd()
-DatabaseLocation = working_dir + '/Database.json'
+DatabaseLocation = f"{working_dir}//Database.json"
 
 debugPrint(f"Current working directory: {working_dir}")
 debugPrint(f"Database Location: {DatabaseLocation}")
