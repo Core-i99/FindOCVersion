@@ -19,11 +19,16 @@
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see <http://www.gnu.org/licenses/>.
 
-import hashlib, json, tkinter.messagebox, tkinter, datetime, os
-from tkinter import filedialog
+import json
+import tkinter
+import datetime
+import os
+from tkinter.messagebox import *
+from tkinter import *
+from tkinter.filedialog import *
 
-Script_Version = "V1.2" 
-debug = 0
+Script_Version = "V2.0" 
+debug = False
 
 root = tkinter.Tk()  # Creating instance of tkinter class
 root.title("Find OC Version")
@@ -34,25 +39,25 @@ fm2 = tkinter.Frame(root)
 fm3 = tkinter.Frame(root)
 fm4 = tkinter.Frame(root)
 
+def debugPrint(message):
+    if debug == True:
+        print(f"Debug: {message}")
+
+
 def openFileClicked():
+    FoundOC = False
     OcVersionLabel['text'] = ''
     filetypes = [
         ('EFI files', '*.efi')
     ]
-    inputfile = filedialog.askopenfilename(filetypes=filetypes)
+    inputfile = askopenfilename(filetypes=filetypes)
     if inputfile != '': # if inputfile isn't an empty string
-        if debug == 1:
-            print("Selected OpenCore.efi: " + inputfile)
-            print("Database location: " + DatabaseLocation)
+        debugPrint(f"Selected OpenCore.efi: {inputfile}")
+        debugPrint(f"Database location: {DatabaseLocation}")
 
-        md5_hash = hashlib.md5()
-        a_file = open(inputfile, "rb")
-        content = a_file.read()
-        md5_hash.update(content)
-        digest = md5_hash.hexdigest()
-
-        if debug == 1:
-            print("OpenCore.efi MD5 checksum: " + digest)
+        # read input file (OpenCore.efi)
+        with open(inputfile, 'rb') as f:
+            hexdata = str(f.read().hex()).upper()
 
         # Read database file
         with open(DatabaseLocation) as file:
@@ -61,16 +66,20 @@ def openFileClicked():
         # Parse json file
         databasedata = json.loads(database)
 
-        if digest not in databasedata:
-            tkinter.messagebox.showwarning( "OC version not found in database", "OC Version not found in database!\n\nPlease update the database using GetOCMD5 for the latest OpenCore versions.\n\nNote that only Opencore Releases from GitHub are supported.")
-        
-        OcVersionLabel['text'] = 'OC Version ' + databasedata[digest]
+        for line in databasedata:
+            debugPrint(f"Line from database: {line}")
+            line_no_space = str(line).replace(" ", "")
+            if (line_no_space in hexdata):
+                FoundOC = True
+                debugPrint(f"OpenCore Version: {databasedata[line]}")
+                OcVersionLabel['text'] = 'OC Version ' + databasedata[line]
 
-    elif debug == 1:
-            print("Nothing Selected")    
+        if (FoundOC == False): showerror("Error", "Couldn't find the version of this OpenCore.efi")
 
-def showinfo():
-     tkinter.messagebox.showinfo("About", "Script to find the OpenCore version from an OpenCore EFI folder.\n\nScript version: %s\n " % (Script_Version))
+    else: debugPrint("Nothing selected") 
+
+def about():
+    showinfo("About", f"Script to find the OpenCore version from an OpenCore EFI folder.\n\nScript version: {Script_Version}\n ")
 
 def exitwindow():
     print("\nThanks for using Find OC Version " + Script_Version)
@@ -91,12 +100,12 @@ def exitwindow():
 
 def ChangeDebug():  
     global debug
-    if debug == 0:
-        debug = 1
+    if debug == False:
+        debug = True
         print("Enabled debug mode")  
         DebugButton['text'] = 'Disable debug mode'
-    elif debug == 1:
-        debug = 0
+    elif debug == True:
+        debug = False
         DebugButton['text'] = 'Enable debug mode'
 
 def centerwindow():
@@ -114,21 +123,21 @@ centerwindow() #center the gui window on the screen
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 working_dir = os.getcwd()
 DatabaseLocation = working_dir + '/Database.json'
-if debug == 1:
-    print("\nCurrent working directory: ", working_dir)
-    print("Database Location: "+ DatabaseLocation)
+
+debugPrint(f"Current working directory: {working_dir}")
+debugPrint(f"Database Location: {DatabaseLocation}")
 
 # Buttons and labels
-tkinter.Button(fm1, text='Select OpenCore.efi', command=openFileClicked).pack(side='left', expand=1, padx=10)
-tkinter.Button(fm3, text="About", command=showinfo).pack(side='left', expand=1, padx=10)
+Button(fm1, text='Select OpenCore.efi', command=openFileClicked).pack(side='left', expand=1, padx=10)
+Button(fm3, text="About", command=about).pack(side='left', expand=1, padx=10)
 
-DebugButton = tkinter.Button(fm3, text='Enable debug mode', command=ChangeDebug)
+DebugButton = Button(fm3, text='Enable debug mode', command=ChangeDebug)
 DebugButton.pack(side='left', expand=1, padx=10)  
 
-OcVersionLabel = tkinter.Label(fm2, text='')
+OcVersionLabel = Label(fm2, text='')
 OcVersionLabel.pack(side='left', expand=1, padx=10)
 
-tkinter.Button(fm4, text='Exit', command=exitwindow).pack(side='left', expand=1, padx=10)
+Button(fm4, text='Exit', command=exitwindow).pack(side='left', expand=1, padx=10)
 
 # pack the frames
 fm1.pack(pady=10)
