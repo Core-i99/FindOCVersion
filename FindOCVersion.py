@@ -10,34 +10,33 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see <http://www.gnu.org/licenses/>.
 
 import json
-import tkinter
 import datetime
 import os
-from tkinter.messagebox import *
-from tkinter import *
+from tkinter.messagebox import showerror, showinfo
+from tkinter import Frame, Tk, Label, Button
 from tkinter.filedialog import *
 
-Script_Version = "V2.0" 
+Script_Version = "V2.0"
 debug = False
 
-root = tkinter.Tk()  # Creating instance of tkinter class
+root = Tk()  # Creating instance of tkinter class
 root.title("Find OC Version")
 root.resizable(False, False)  # Disable rootwindow resizing
 
-fm1 = tkinter.Frame(root)
-fm2 = tkinter.Frame(root)
-fm3 = tkinter.Frame(root)
-fm4 = tkinter.Frame(root)
+fm1 = Frame(root)
+fm2 = Frame(root)
+fm3 = Frame(root)
+fm4 = Frame(root)
 
 def debugPrint(message):
     if debug == True:
@@ -60,7 +59,7 @@ def openFileClicked():
             hexdata = str(f.read().hex()).upper()
 
         # Read database file
-        with open(DatabaseLocation) as file:
+        with open (DatabaseLocation) as file:
             database = file.read()
 
         # Parse json file
@@ -74,9 +73,10 @@ def openFileClicked():
                 debugPrint(f"OpenCore Version: {databasedata[line]}")
                 OcVersionLabel['text'] = f"OC Version {databasedata[line]}"
 
-        if (FoundOC == False): showerror("Error", "Couldn't find the version of this OpenCore.efi")
+        if (FoundOC == False):
+            showerror("Error", "Couldn't find the version of this OpenCore.efi")
 
-    else: debugPrint("Nothing selected") 
+    else: debugPrint("Nothing selected")
 
 def about():
     showinfo("About", f"Script to find the OpenCore version from an OpenCore EFI folder.\n\nScript version: {Script_Version}\n ")
@@ -95,14 +95,14 @@ def exitwindow():
     elif hour >= 17 and hour < 21:
         print("Have a nice evening!\n\n")
     else:
-        print("Have a nice night! (And don't forget to sleep!)\n\n")  
-    exit()       
+        print("Have a nice night! (And don't forget to sleep!)\n\n")
+    exit()
 
-def ChangeDebug():  
+def ChangeDebug():
     global debug
     if debug == False:
         debug = True
-        print("Enabled debug mode")  
+        print("Enabled debug mode")
         DebugButton['text'] = 'Disable debug mode'
     elif debug == True:
         debug = False
@@ -132,7 +132,7 @@ Button(fm1, text='Select OpenCore.efi', command=openFileClicked).pack(side='left
 Button(fm3, text="About", command=about).pack(side='left', expand=1, padx=10)
 
 DebugButton = Button(fm3, text='Enable debug mode', command=ChangeDebug)
-DebugButton.pack(side='left', expand=1, padx=10)  
+DebugButton.pack(side='left', expand=1, padx=10)
 
 OcVersionLabel = Label(fm2, text='')
 OcVersionLabel.pack(side='left', expand=1, padx=10)
