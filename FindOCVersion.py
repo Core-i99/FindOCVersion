@@ -27,124 +27,128 @@ from tkinter.messagebox import showerror, showinfo
 from tkinter import Frame, Tk, Label, Button
 from tkinter.filedialog import askopenfilename
 
-Script_Version = "V2.0"
-debug = False
 
-root = Tk()  # Creating instance of tkinter class
-root.title("Find OC Version")
-root.resizable(False, False)  # Disable rootwindow resizing
+class MainWindow():
+    def __init__(self):
+        self.Script_Version = "V2.0"
+        self.debug = False
+        self.root = Tk()  # Creating instance of tkinter class
+        self.root.title("Find OC Version")
+        self.root.resizable(False, False)  # Disable rootwindow resizing
 
-fm1 = Frame(root)
-fm2 = Frame(root)
-fm3 = Frame(root)
-fm4 = Frame(root)
+        fm1 = Frame(self.root)
+        fm2 = Frame(self.root)
+        fm3 = Frame(self.root)
+        fm4 = Frame(self.root)
 
-def debugPrint(message):
-    if debug:
-        print(f"Debug: {message}")
+        # Buttons and labels
+        Button(fm1, text='Select OpenCore.efi', command=self.openFileClicked).pack(side='left', expand=1, padx=10)
+        Button(fm3, text="About", command=self.about).pack(side='left', expand=1, padx=10)
 
+        self.DebugButton = Button(fm3, text='Enable debug mode', command=self.ChangeDebug)
+        self.DebugButton.pack(side='left', expand=1, padx=10)
 
-def openFileClicked():
-    FoundOC = False
-    OcVersionLabel['text'] = ''
-    filetypes = [
-        ('EFI files', '*.efi')
-    ]
-    inputfile = askopenfilename(filetypes=filetypes)
-    if inputfile != '': # if inputfile isn't an empty string
-        debugPrint(f"Selected OpenCore.efi: {inputfile}")
-        debugPrint(f"Database location: {DatabaseLocation}")
+        self.OcVersionLabel = Label(fm2, text='')
+        self.OcVersionLabel.pack(side='left', expand=1, padx=10)
 
-        # read input file (OpenCore.efi)
-        with open(inputfile, 'rb') as f:
-            hexdata = str(f.read().hex()).upper()
+        Button(fm4, text='Exit', command=self.exitwindow).pack(side='left', expand=1, padx=10)
 
-        # Read database file
-        with open(DatabaseLocation , encoding="utf8") as file:
-            database = file.read()
+        # pack the frames
+        fm1.pack(pady=10)
+        fm2.pack(pady=10)
+        fm3.pack(pady=10)
+        fm4.pack(pady=10)
 
-        # Parse json file
-        databasedata = json.loads(database)
+        
 
-        for line in databasedata:
-            debugPrint(f"Line from database: {line}")
-            line_no_space = str(line).replace(" ", "")
-            if line_no_space in hexdata:
-                FoundOC = True
-                debugPrint(f"OpenCore Version: {databasedata[line]}")
-                OcVersionLabel['text'] = f"OC Version {databasedata[line]}"
+        # working directory
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+        working_dir = os.getcwd()
+        self.DatabaseLocation = f"{working_dir}//Database.json"
+        self.debugPrint(f"Current working directory: {working_dir}")
+        self.debugPrint(f"Database Location: {self.DatabaseLocation}")
 
-        if FoundOC is False:
-            showerror("Error", "Couldn't find the version of this OpenCore.efi")
+        self.centerwindow()
+        self.root.mainloop()
 
-    else: debugPrint("Nothing selected")
-
-def about():
-    showinfo("About", f"Script to find the OpenCore version from an OpenCore EFI folder.\n\nScript version: {Script_Version}\n ")
-
-def exitwindow():
-    print(f"\nThanks for using Find OC Version {Script_Version}")
-    print("Written By Core i99 - © Stijn Rombouts 2021\n")
-    print("Check out my GitHub:\n")
-    print("https://github.com/Core-i99/\n\n")
-
-    hour = datetime.datetime.now().time().hour
-    if 3 < hour < 12:
-        print("Have a nice morning!\n\n")
-    elif 12 <= hour < 17:
-        print("Have a nice afternoon!\n\n")
-    elif 17 <= hour < 21:
-        print("Have a nice evening!\n\n")
-    else:
-        print("Have a nice night! (And don't forget to sleep!)\n\n")
-    sys.exit()
-
-def ChangeDebug():
-    global debug
-    if debug is False:
-        debug = True
-        print("Enabled debug mode")
-        DebugButton['text'] = 'Disable debug mode'
-    elif debug:
-        debug = False
-        DebugButton['text'] = 'Enable debug mode'
-
-def centerwindow():
-    app_height = 200
-    app_width = 500
-    screen_width = root.winfo_screenwidth()
-    screen_height = root.winfo_screenheight()
-    x_cordinate = int((screen_width/2) - (app_width/2))
-    y_cordinate = int((screen_height/2) - (app_height/2))
-    root.geometry(f"{app_width}x{app_height}+{x_cordinate}+{y_cordinate}")
+    def debugPrint(self, message):
+        if self.debug:
+            print(f"Debug: {message}")
 
 
-centerwindow() #center the gui window on the screen
+    def openFileClicked(self):
+        FoundOC = False
+        self.OcVersionLabel['text'] = ''
+        filetypes = [
+            ('EFI files', '*.efi')
+        ]
+        inputfile = askopenfilename(filetypes=filetypes)
+        if inputfile != '': # if inputfile isn't an empty string
+            self.debugPrint(f"Selected OpenCore.efi: {inputfile}")
+            self.debugPrint(f"Database location: {self.DatabaseLocation}")
 
-# working directory
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-working_dir = os.getcwd()
-DatabaseLocation = f"{working_dir}//Database.json"
+            # read input file (OpenCore.efi)
+            with open(inputfile, 'rb') as f:
+                hexdata = str(f.read().hex()).upper()
 
-debugPrint(f"Current working directory: {working_dir}")
-debugPrint(f"Database Location: {DatabaseLocation}")
+            # Read database file
+            with open(self.DatabaseLocation , encoding="utf8") as file:
+                database = file.read()
 
-# Buttons and labels
-Button(fm1, text='Select OpenCore.efi', command=openFileClicked).pack(side='left', expand=1, padx=10)
-Button(fm3, text="About", command=about).pack(side='left', expand=1, padx=10)
+            # Parse json file
+            databasedata = json.loads(database)
 
-DebugButton = Button(fm3, text='Enable debug mode', command=ChangeDebug)
-DebugButton.pack(side='left', expand=1, padx=10)
+            for line in databasedata:
+                self.debugPrint(f"Line from database: {line}")
+                line_no_space = str(line).replace(" ", "")
+                if line_no_space in hexdata:
+                    FoundOC = True
+                    self.debugPrint(f"OpenCore Version: {databasedata[line]}")
+                    self.OcVersionLabel['text'] = f"OC Version {databasedata[line]}"
 
-OcVersionLabel = Label(fm2, text='')
-OcVersionLabel.pack(side='left', expand=1, padx=10)
+            if FoundOC is False:
+                showerror("Error", "Couldn't find the version of this OpenCore.efi")
 
-Button(fm4, text='Exit', command=exitwindow).pack(side='left', expand=1, padx=10)
+        else: self.debugPrint("Nothing selected")
 
-# pack the frames
-fm1.pack(pady=10)
-fm2.pack(pady=10)
-fm3.pack(pady=10)
-fm4.pack(pady=10)
+    def about(self):
+        showinfo("About", f"Script to find the OpenCore version from an OpenCore EFI folder.\n\nScript version: {self.Script_Version}\n ")
 
-root.mainloop()
+
+    def exitwindow(self):
+        print(f"\nThanks for using Find OC Version {self.Script_Version}")
+        print("Written By Core i99 - © Stijn Rombouts 2021\n")
+        print("Check out my GitHub:\n")
+        print("https://github.com/Core-i99/\n\n")
+
+        hour = datetime.datetime.now().time().hour
+        if 3 < hour < 12:
+            print("Have a nice morning!\n\n")
+        elif 12 <= hour < 17:
+            print("Have a nice afternoon!\n\n")
+        elif 17 <= hour < 21:
+            print("Have a nice evening!\n\n")
+        else:
+            print("Have a nice night! (And don't forget to sleep!)\n\n")
+        sys.exit()
+
+
+    def ChangeDebug(self):
+        if debug is False:
+            debug = True
+            print("Enabled debug mode")
+            self.DebugButton['text'] = 'Disable debug mode'
+        elif debug:
+            debug = False
+            self.DebugButton['text'] = 'Enable debug mode'
+
+    def centerwindow(self):
+        app_height = 200
+        app_width = 500
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        x_cordinate = int((screen_width/2) - (app_width/2))
+        y_cordinate = int((screen_height/2) - (app_height/2))
+        self.root.geometry(f"{app_width}x{app_height}+{x_cordinate}+{y_cordinate}")
+
+MainWindow()
