@@ -24,7 +24,7 @@ import datetime
 import os
 from tkinter.messagebox import showerror, showinfo
 from tkinter import Frame, Tk, Label, Button
-from tkinter.filedialog import *
+from tkinter.filedialog import askopenfilename
 
 Script_Version = "V2.0"
 debug = False
