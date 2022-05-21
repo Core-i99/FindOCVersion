@@ -1,5 +1,6 @@
 # FindOCVersion
 Script to find the Opencore version from an EFI folder by searching the OpenCore.efi binary.
+Currently only supports OpenCore 0.7.0 - 0.8.0
 
 # Usage
 - Make sure python3 is installed!
