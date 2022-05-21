@@ -22,6 +22,7 @@
 import json
 import datetime
 import os
+import sys
 from tkinter.messagebox import showerror, showinfo
 from tkinter import Frame, Tk, Label, Button
 from tkinter.filedialog import askopenfilename
@@ -39,7 +40,7 @@ fm3 = Frame(root)
 fm4 = Frame(root)
 
 def debugPrint(message):
-    if debug == True:
+    if debug:
         print(f"Debug: {message}")
 
 
@@ -59,7 +60,7 @@ def openFileClicked():
             hexdata = str(f.read().hex()).upper()
 
         # Read database file
-        with open (DatabaseLocation) as file:
+        with open(DatabaseLocation , encoding="utf8") as file:
             database = file.read()
 
         # Parse json file
@@ -68,12 +69,12 @@ def openFileClicked():
         for line in databasedata:
             debugPrint(f"Line from database: {line}")
             line_no_space = str(line).replace(" ", "")
-            if (line_no_space in hexdata):
+            if line_no_space in hexdata:
                 FoundOC = True
                 debugPrint(f"OpenCore Version: {databasedata[line]}")
                 OcVersionLabel['text'] = f"OC Version {databasedata[line]}"
 
-        if (FoundOC == False):
+        if FoundOC is False:
             showerror("Error", "Couldn't find the version of this OpenCore.efi")
 
     else: debugPrint("Nothing selected")
@@ -88,23 +89,23 @@ def exitwindow():
     print("https://github.com/Core-i99/\n\n")
 
     hour = datetime.datetime.now().time().hour
-    if hour > 3 and hour < 12:
+    if 3 < hour < 12:
         print("Have a nice morning!\n\n")
-    elif hour >= 12 and hour < 17:
+    elif 12 <= hour < 17:
         print("Have a nice afternoon!\n\n")
-    elif hour >= 17 and hour < 21:
+    elif 17 <= hour < 21:
         print("Have a nice evening!\n\n")
     else:
         print("Have a nice night! (And don't forget to sleep!)\n\n")
-    exit()
+    sys.exit()
 
 def ChangeDebug():
     global debug
-    if debug == False:
+    if debug is False:
         debug = True
         print("Enabled debug mode")
         DebugButton['text'] = 'Disable debug mode'
-    elif debug == True:
+    elif debug:
         debug = False
         DebugButton['text'] = 'Enable debug mode'
 
@@ -116,6 +117,7 @@ def centerwindow():
     x_cordinate = int((screen_width/2) - (app_width/2))
     y_cordinate = int((screen_height/2) - (app_height/2))
     root.geometry(f"{app_width}x{app_height}+{x_cordinate}+{y_cordinate}")
+
 
 centerwindow() #center the gui window on the screen
 
