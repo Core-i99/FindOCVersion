@@ -33,6 +33,10 @@ jobs:
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
+      - name: brew link
+        run: |
+          brew link python-tk
+          
       - name: Install tkinter using brew
         run: |
           brew install python-tk@3.10
