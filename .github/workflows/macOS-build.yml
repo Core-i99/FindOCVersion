@@ -35,8 +35,8 @@ jobs:
 
       - name: Install tkinter using brew
         run: |
-          brew install python-tk@3.9
-          
+          brew install python-tk@3.10
+
       - name: Install pyinstaller
         run: |
           pip3 install pyinstaller
