@@ -23,8 +23,8 @@ jobs:
         run: |
            python3 macOS-build/setup.py py2app || exit 1
 
-      - name: Upload py2app result to Artifacts
+      - name: Upload app to Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Py2app Artifacts
-          path: ./py2app_result.txt
+          name: macOS Artifacts
+          path: ./dist/FindOCVersion.app
