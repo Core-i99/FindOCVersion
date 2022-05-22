@@ -8,19 +8,15 @@ on:
 
 jobs:
   macOS-build:
-    name: macOS build
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
-
       - name: Install py2app
         run: |
           python3 -m pip install py2app
-
       - name: Run py2app
         run: |
            python3 macOS-build/setup.py py2app || exit 1
-
       - name: Upload app to Artifacts
         uses: actions/upload-artifact@v3
         with:
