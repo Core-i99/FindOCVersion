@@ -11,15 +11,12 @@ jobs:
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
-      - name: Install py2app
+      - name: Install pyinstaller
         run: |
-          pip3 install py2app
-      - name: Install tkinter
+          pip3 install pyinstaller
+      - name: Run pyinstaller
         run: |
-          pip3 install tk  
-      - name: Run py2app
-        run: |
-           python3 macOS-build/setup.py py2app
+           pyinstaller --windowed FindOCVersion.py
       - name: Upload app to Artifacts
         uses: actions/upload-artifact@v3
         with:
