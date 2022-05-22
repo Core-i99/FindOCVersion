@@ -35,7 +35,7 @@ jobs:
 
       - name: Check tkinter install
         run: |
-          python3 -m tkinter    
+          python3 -c 'import tkinter; tcl = tkinter.Tcl(); print(tcl.call("info", "patchlevel"))'  
 
       - name: Install pyinstaller
         run: |
