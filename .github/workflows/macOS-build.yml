@@ -10,8 +10,6 @@ jobs:
   macOS-build:
     name: macOS build
     runs-on: macos-latest
-    env:
-      JOB_TYPE: ANALYZE
     steps:
       - uses: actions/checkout@v3
 
@@ -26,5 +24,5 @@ jobs:
       - name: Upload app to Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: macOS Artifacts
+          name: FindOCVersion macOS
           path: ./dist/
