@@ -29,9 +29,13 @@ jobs:
           which pip3
           pip3 --version
           
+      - name: Install tkinter
+        run: |
+          pip3 install tk
+
       - name: Check tkinter install
         run: |
-          python -m tkinter
+          python3 -m tkinter    
 
       - name: Install pyinstaller
         run: |
