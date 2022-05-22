@@ -19,10 +19,10 @@
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see <http://www.gnu.org/licenses/>.
 
-import os
 from tkinter.messagebox import showerror, showinfo
 from tkinter import Frame, Tk, Label, Button
 from tkinter.filedialog import askopenfilename
+import Logging
 
 # Database: 
 OC080REL = ["30 38 C6 05 AE 56 02 00 30 C7 05 A6 56 02 00 32 30 32 32 66 C7 05 A2 56 02 00 30 34", "OC 0.8.0 RELEASE"]
@@ -67,13 +67,10 @@ class MainWindow():
         fm1 = Frame(self.root)
         fm2 = Frame(self.root)
         fm3 = Frame(self.root)
-        fm4 = Frame(self.root)
 
         # Buttons and labels
         Button(fm1, text='Select OpenCore.efi', command=self.openFileClicked).pack(side='left', expand=1, padx=10)
-        Button(fm4, text="About", command=self.about).pack()
-        self.DebugButton = Button(fm3, text='Enable debug mode', command=self.ChangeDebug)
-        self.DebugButton.pack(side='left', expand=1, padx=10)
+        Button(fm3, text="About", command=self.about).pack()
         self.OcVersionLabel = Label(fm2, text='OpenCore Version:')
         self.OcVersionLabel.pack(side='left', expand=1, padx=10)
 
@@ -81,21 +78,9 @@ class MainWindow():
         fm1.pack(pady=10)
         fm2.pack(pady=10)
         fm3.pack(pady=10)
-        fm4.pack(pady=10)
-
-        # working directory
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
-        working_dir = os.getcwd()
-        self.DatabaseLocation = f"{working_dir}//Database.json"
-        self.debugPrint(f"Current working directory: {working_dir}")
-        self.debugPrint(f"Database Location: {self.DatabaseLocation}")
 
         self.centerwindow()
         self.root.mainloop()
-
-    def debugPrint(self, message):
-        if self.debug:
-            print(f"Debug: {message}")
 
     def openFileClicked(self):
         FoundOC = False
@@ -105,42 +90,35 @@ class MainWindow():
         ]
         inputfile = askopenfilename(filetypes=filetypes)
         if inputfile != '': # if inputfile isn't an empty string
-            self.debugPrint(f"Selected OpenCore.efi: {inputfile}")
+            Logging.info(f"Selected OpenCore.efi: {inputfile}")
 
             # read input file (OpenCore.efi)
             with open(inputfile, 'rb') as f:
                 hexdata = str(f.read().hex()).upper()
 
             for i in OCVersions:
-                self.debugPrint(f"Line from database: {i[0]}")
+                Logging.info(f"Line from database: {i[0]}")
                 OCHexData = i[0].replace(" ", "") # Remove the spaces from the hex data to search for in OpenCore.efi
 
                 if OCHexData in hexdata:
-                    print(f"Found OpenCore version: {i[1]}")
+                    Logging.info(f"Found OpenCore version: {i[1]}")
                     self.OcVersionLabel['text'] = f"OpenCore Version: {i[1]}"
                     FoundOC = True
                     break
 
             if FoundOC is False:
+                Logging.critical("Couldn't find the version of this OpenCore.efi")
                 showerror("Error", "Couldn't find the version of this OpenCore.efi")
 
-        else: self.debugPrint("Nothing selected")
+        else:
+            Logging.warning("No file has been selected")
 
     def about(self):
         showinfo("About", f"Script to find the OpenCore version from an OpenCore EFI folder.\n\nScript version: {self.Script_Version}\n ")
 
-    def ChangeDebug(self):
-        if self.debug is False:
-            self.debug = True
-            print("Enabled debug mode")
-            self.DebugButton['text'] = 'Disable debug mode'
-        elif self.debug:
-            self.debug = False
-            self.DebugButton['text'] = 'Enable debug mode'
-
     def centerwindow(self):
-        app_height = 200
-        app_width = 500
+        app_height = 150
+        app_width = 300
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
         x_cordinate = int((screen_width/2) - (app_width/2))
