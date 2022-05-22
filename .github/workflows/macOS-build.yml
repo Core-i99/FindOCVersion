@@ -1,0 +1,34 @@
+name: macOS-build
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  macOS-build:
+    name: macOS build
+    runs-on: ubuntu-latest
+    env:
+      JOB_TYPE: ANALYZE
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install py2app
+        run: |
+          python3 -m pip install py2app
+      
+      - name: Install tkinter
+        run: |
+          sudo apt-get install python3-tk
+
+      - name: Run py2app
+        run: |
+           python3 macOS-build/setup.py py2app > py2app_result.txt || exit 1
+
+      - name: Upload py2app result to Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Py2app Artifacts
+          path: ./py2app_result.txt
