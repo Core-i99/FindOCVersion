@@ -37,10 +37,6 @@ jobs:
         run: |
           brew install python-tk
           
-      - name: Check tkinter install
-        run: |
-          python3 -c 'import tkinter; tcl = tkinter.Tcl(); print(tcl.call("info", "patchlevel"))'  
-
       - name: Install pyinstaller
         run: |
           pip3 install pyinstaller
