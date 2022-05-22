@@ -21,9 +21,7 @@ jobs:
       
       - name: Install tkinter
         run: |
-          python3 -m pip install tkinter
-          python3 -m pip install tkinter.messagebox
-          python3 -m pip install tkinter.filedialog
+          apt-get install python3-tk
 
       - name: Run prospector
         run: |
