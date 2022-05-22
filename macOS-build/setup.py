@@ -9,6 +9,7 @@ APP = ['FindOCVersion.py']
 DATA_FILES = []
 OPTIONS = {
     'iconfile': 'macOS-build/Icon.icns',
+    'packages': ['tkinter'],
     'plist': {
         'CFBundleDevelopmentRegion': 'English',
         'CFBundleIdentifier': "com.Core-i99.FindOCVersion",
