@@ -29,10 +29,14 @@ jobs:
           which pip3
           pip3 --version
           
-      - name: Install tkinter
+      - name: Install brew
         run: |
-          pip3 install tk
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
+      - name: Install tkinter using brew
+        run: |
+          brew install python-tk
+          
       - name: Check tkinter install
         run: |
           python3 -c 'import tkinter; tcl = tkinter.Tcl(); print(tcl.call("info", "patchlevel"))'  
