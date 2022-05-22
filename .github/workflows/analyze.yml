@@ -1,0 +1,34 @@
+name: Analyze
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  analyze-python-scripts:
+    name: Python Scripts
+    runs-on: ubuntu-latest
+    env:
+      JOB_TYPE: ANALYZE
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install prospector
+        run: |
+          python3 -m pip install prospector
+      
+      - name: Install tkinter
+        run: |
+          sudo apt-get install python3-tk
+
+      - name: Run prospector
+        run: |
+          python3 -m prospector > prospector_result.txt || exit 1
+
+      - name: Upload prospector result to Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Prospector Artifacts
+          path: ./prospector_result.txt
