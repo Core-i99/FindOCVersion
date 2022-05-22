@@ -15,9 +15,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Dependencies
+      - name: Install prospector
         run: |
           python3 -m pip install prospector
+      
+      - name: Install tkinter
+        run: |
+          python3 -m pip install tkinter
+          python3 -m pip install tkinter.messagebox
+          python3 -m pip install tkinter.filedialog
 
       - name: Run prospector
         run: |
