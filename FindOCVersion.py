@@ -27,7 +27,6 @@ from tkinter.messagebox import showerror, showinfo
 from tkinter import Frame, Tk, Label, Button
 from tkinter.filedialog import askopenfilename
 
-
 class MainWindow():
     def __init__(self):
         self.Script_Version = "V2.0"
@@ -36,6 +35,7 @@ class MainWindow():
         self.root.title("Find OC Version")
         self.root.resizable(False, False)  # Disable rootwindow resizing
 
+        # Frames
         fm1 = Frame(self.root)
         fm2 = Frame(self.root)
         fm3 = Frame(self.root)
@@ -44,13 +44,10 @@ class MainWindow():
         # Buttons and labels
         Button(fm1, text='Select OpenCore.efi', command=self.openFileClicked).pack(side='left', expand=1, padx=10)
         Button(fm3, text="About", command=self.about).pack(side='left', expand=1, padx=10)
-
         self.DebugButton = Button(fm3, text='Enable debug mode', command=self.ChangeDebug)
         self.DebugButton.pack(side='left', expand=1, padx=10)
-
         self.OcVersionLabel = Label(fm2, text='')
         self.OcVersionLabel.pack(side='left', expand=1, padx=10)
-
         Button(fm4, text='Exit', command=self.exitwindow).pack(side='left', expand=1, padx=10)
 
         # pack the frames
@@ -58,8 +55,6 @@ class MainWindow():
         fm2.pack(pady=10)
         fm3.pack(pady=10)
         fm4.pack(pady=10)
-
-        
 
         # working directory
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -74,7 +69,6 @@ class MainWindow():
     def debugPrint(self, message):
         if self.debug:
             print(f"Debug: {message}")
-
 
     def openFileClicked(self):
         FoundOC = False
@@ -114,7 +108,6 @@ class MainWindow():
     def about(self):
         showinfo("About", f"Script to find the OpenCore version from an OpenCore EFI folder.\n\nScript version: {self.Script_Version}\n ")
 
-
     def exitwindow(self):
         print(f"\nThanks for using Find OC Version {self.Script_Version}")
         print("Written By Core i99 - © Stijn Rombouts 2021\n")
@@ -131,7 +124,6 @@ class MainWindow():
         else:
             print("Have a nice night! (And don't forget to sleep!)\n\n")
         sys.exit()
-
 
     def ChangeDebug(self):
         if self.debug is False:
