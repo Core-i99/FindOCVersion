@@ -19,13 +19,41 @@
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see <http://www.gnu.org/licenses/>.
 
-import json
-import datetime
 import os
-import sys
 from tkinter.messagebox import showerror, showinfo
 from tkinter import Frame, Tk, Label, Button
 from tkinter.filedialog import askopenfilename
+
+# Database: 
+OC080REL = ["30 38 C6 05 AE 56 02 00 30 C7 05 A6 56 02 00 32 30 32 32 66 C7 05 A2 56 02 00 30 34", "OC 0.8.0 RELEASE"]
+OC080DBG = ["30 38 C6 05 BF DE 04 00 30 C7 05 B7 DE 04 00 32 30 32 32 66 C7 05 B3 DE 04 00 30 34", "OC 0.8.0 DEBUG"]
+OC079REL = ["30 37 66 89 05 01 4F 02 00 C6 05 FC 4E 02 00 39 C7 05 F4 4E 02 00 32 30 32 32 66 C7 05 F0 4E 02 00 30 33", "OC 0.7.9 RELEASE"]
+OC079DBG = ["30 37 66 89 05 17 D4 04 00 C6 05 12 D4 04 00 39 C7 05 0A D4 04 00 32 30 32 32 66 C7 05 06 D4 04 00 30 33", "OC 0.7.9 DEBUG"]
+OC078REL = ["30 37 66 89 05 D0 46 02 00 C6 05 CB 46 02 00 38 C7 05 C3 46 02 00 32 30 32 32 66 C7 05 BF 46 02 00 30 32", "OC 0.7.8 RELEASE"]
+OC078DBG = ["30 37 66 89 05 8C C1 04 00 C6 05 87 C1 04 00 38 C7 05 7F C1 04 00 32 30 32 32 66 C7 05 7B C1 04 00 30 32", "OC 0.7.8 DEBUG"]
+OC077REL = ["30 37 C6 05 4D 47 02 00 37 C7 05 45 47 02 00 32 30 32 32 66 C7 05 41 47 02 00 30 31", "OC 0.7.7 RELEASE"]
+OC077DBG = ["30 37 C6 05 3D C3 04 00 37 C7 05 35 C3 04 00 32 30 32 32 66 C7 05 31 C3 04 00 30 31", "OC 0.7.7 DEBUG"]
+OC076REL = ["30 37 C6 05 9D 47 02 00 36 C7 05 95 47 02 00 32 30 32 31 66 C7 05 91 47 02 00 31 32", "OC 0.7.6 RELEASE"]
+OC076DBG = ["30 37 C6 05 D1 B6 04 00 36 C7 05 C9 B6 04 00 32 30 32 31 66 C7 05 C5 B6 04 00 31 32", "OC 0.7.6 DEBUG"]
+OC075REL = ["30 37 C6 05 B9 48 02 00 35 C7 05 B1 48 02 00 32 30 32 31 66 C7 05 AD 48 02 00 31 31", "OC 0.7.5 RELEASE"]
+OC075DBG = ["30 37 C6 05 5D BC 04 00 35 C7 05 55 BC 04 00 32 30 32 31 66 C7 05 51 BC 04 00 31 31", "OC 0.7.5 DEBUG"]
+OC074REL = ["30 37 C6 05 69 3C 02 00 34 C7 05 61 3C 02 00 32 30 32 31 66 C7 05 5D 3C 02 00 31 30", "OC 0.7.4 RELEASE"]
+OC074DBG = ["30 37 C6 05 55 B5 04 00 34 C7 05 4D B5 04 00 32 30 32 31 66 C7 05 49 B5 04 00 31 30", "OC 0.7.4 DEBUG"]
+OC073REL = ["30 37 C6 05 A5 38 02 00 33 C7 05 9D 38 02 00 32 30 32 31 66 C7 05 99 38 02 00 30 39", "OC 0.7.3 RELEASE"]
+OC073DBG = ["30 37 C6 05 61 B2 04 00 33 C7 05 59 B2 04 00 32 30 32 31 66 C7 05 55 B2 04 00 30 39", "OC 0.7.3 DEBUG"]
+OC072REL = ["30 37 C6 05 B8 33 02 00 32 C7 05 B0 33 02 00 32 30 32 31 66 C7 05 AC 33 02 00 30 38", "OC 0.7.2 RELEASE"]
+OC072DBG = ["30 37 C6 05 1E A4 04 00 32 C7 05 16 A4 04 00 32 30 32 31 66 C7 05 12 A4 04 00 30 38", "OC 0.7.2 DEBUG"]
+OC071REL = \
+["30 37 66 89 05 73 2F 02 00 C6 05 6E 2F 02 00 31 C7 05 66 2F 02 00 32 30 32 31 66 89 05 64 2F 02 00 66 C7 05 5E 2F 02 00 30 35", 
+"OC 0.7.1 RELEASE"]
+OC071DBG = \
+["30 37 66 89 05 85 99 04 00 C6 05 80 99 04 00 31 C7 05 78 99 04 00 32 30 32 31 66 89 05 76 99 04 00 66 C7 05 70 99 04 00 30 35", 
+"OC 0.7.1 DEBUG"]
+OC070REL = ["30 37 66 89 05 DF 31 02 00 C6 05 DA 31 02 00 30 C7 05 D2 31 02 00 32 30 32 31 66 C7 05 CE 31 02 00 30 36", "OC 0.7.0 RELEASE"]
+OC070DBG = ["30 37 66 89 05 74 88 04 00 C6 05 6F 88 04 00 30 C7 05 67 88 04 00 32 30 32 31 66 C7 05 63 88 04 00 30 36", "OC 0.7.0 DEBUG"]
+OCVersions = \
+[OC080REL, OC080DBG, OC079REL, OC079DBG, OC078REL, OC078DBG, OC077REL, OC077DBG, OC076REL, OC076DBG, OC075REL, OC075DBG, 
+OC074REL, OC074DBG, OC073REL, OC073DBG, OC073REL, OC073DBG, OC072REL, OC072DBG, OC071REL, OC071DBG, OC070REL, OC070DBG]   
 
 class MainWindow():
     def __init__(self):
@@ -43,12 +71,11 @@ class MainWindow():
 
         # Buttons and labels
         Button(fm1, text='Select OpenCore.efi', command=self.openFileClicked).pack(side='left', expand=1, padx=10)
-        Button(fm3, text="About", command=self.about).pack(side='left', expand=1, padx=10)
+        Button(fm4, text="About", command=self.about).pack()
         self.DebugButton = Button(fm3, text='Enable debug mode', command=self.ChangeDebug)
         self.DebugButton.pack(side='left', expand=1, padx=10)
-        self.OcVersionLabel = Label(fm2, text='')
+        self.OcVersionLabel = Label(fm2, text='OpenCore Version:')
         self.OcVersionLabel.pack(side='left', expand=1, padx=10)
-        Button(fm4, text='Exit', command=self.exitwindow).pack(side='left', expand=1, padx=10)
 
         # pack the frames
         fm1.pack(pady=10)
@@ -72,33 +99,27 @@ class MainWindow():
 
     def openFileClicked(self):
         FoundOC = False
-        self.OcVersionLabel['text'] = ''
+        self.OcVersionLabel['text'] = 'OpenCore Version:'
         filetypes = [
             ('EFI files', '*.efi')
         ]
         inputfile = askopenfilename(filetypes=filetypes)
         if inputfile != '': # if inputfile isn't an empty string
             self.debugPrint(f"Selected OpenCore.efi: {inputfile}")
-            self.debugPrint(f"Database location: {self.DatabaseLocation}")
 
             # read input file (OpenCore.efi)
             with open(inputfile, 'rb') as f:
                 hexdata = str(f.read().hex()).upper()
 
-            # Read database file
-            with open(self.DatabaseLocation , encoding="utf8") as file:
-                database = file.read()
+            for i in OCVersions:
+                self.debugPrint(f"Line from database: {i[0]}")
+                OCHexData = i[0].replace(" ", "") # Remove the spaces from the hex data to search for in OpenCore.efi
 
-            # Parse json file
-            databasedata = json.loads(database)
-
-            for line in databasedata:
-                self.debugPrint(f"Line from database: {line}")
-                line_no_space = str(line).replace(" ", "")
-                if line_no_space in hexdata:
+                if OCHexData in hexdata:
+                    print(f"Found OpenCore version: {i[1]}")
+                    self.OcVersionLabel['text'] = f"OpenCore Version: {i[1]}"
                     FoundOC = True
-                    self.debugPrint(f"OpenCore Version: {databasedata[line]}")
-                    self.OcVersionLabel['text'] = f"OC Version {databasedata[line]}"
+                    break
 
             if FoundOC is False:
                 showerror("Error", "Couldn't find the version of this OpenCore.efi")
@@ -107,23 +128,6 @@ class MainWindow():
 
     def about(self):
         showinfo("About", f"Script to find the OpenCore version from an OpenCore EFI folder.\n\nScript version: {self.Script_Version}\n ")
-
-    def exitwindow(self):
-        print(f"\nThanks for using Find OC Version {self.Script_Version}")
-        print("Written By Core i99 - © Stijn Rombouts 2021\n")
-        print("Check out my GitHub:\n")
-        print("https://github.com/Core-i99/\n\n")
-
-        hour = datetime.datetime.now().time().hour
-        if 3 < hour < 12:
-            print("Have a nice morning!\n\n")
-        elif 12 <= hour < 17:
-            print("Have a nice afternoon!\n\n")
-        elif 17 <= hour < 21:
-            print("Have a nice evening!\n\n")
-        else:
-            print("Have a nice night! (And don't forget to sleep!)\n\n")
-        sys.exit()
 
     def ChangeDebug(self):
         if self.debug is False:
