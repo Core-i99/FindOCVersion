@@ -16,7 +16,7 @@ jobs:
           pip3 install pyinstaller
       - name: Run pyinstaller
         run: |
-          pyinstaller --hidden-import tkinter --windowed FindOCVersion.py
+          pyinstaller --windowed FindOCVersion.py
       - name: Upload app to Artifacts
         uses: actions/upload-artifact@v3
         with:
