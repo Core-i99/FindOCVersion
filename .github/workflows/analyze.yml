@@ -21,7 +21,7 @@ jobs:
       
       - name: Install tkinter
         run: |
-          apt-get install python3-tk
+          sudo apt-get install python3-tk
 
       - name: Run prospector
         run: |
