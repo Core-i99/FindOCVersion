@@ -134,12 +134,12 @@ class MainWindow():
 
 
     def ChangeDebug(self):
-        if debug is False:
-            debug = True
+        if self.debug is False:
+            self.debug = True
             print("Enabled debug mode")
             self.DebugButton['text'] = 'Disable debug mode'
-        elif debug:
-            debug = False
+        elif self.debug:
+            self.debug = False
             self.DebugButton['text'] = 'Enable debug mode'
 
     def centerwindow(self):
@@ -150,5 +150,6 @@ class MainWindow():
         x_cordinate = int((screen_width/2) - (app_width/2))
         y_cordinate = int((screen_height/2) - (app_height/2))
         self.root.geometry(f"{app_width}x{app_height}+{x_cordinate}+{y_cordinate}")
+
 
 MainWindow()
