@@ -16,7 +16,7 @@ jobs:
           python3 -m pip install py2app
       - name: Install tkinter
         run: |
-          python3 -m pip install tkinter    
+          python3 -m pip install tk  
       - name: Run py2app
         run: |
            python3 macOS-build/setup.py py2app
