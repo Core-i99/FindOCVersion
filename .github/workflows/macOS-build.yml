@@ -18,14 +18,10 @@ jobs:
       - name: Install py2app
         run: |
           python3 -m pip install py2app
-      
-      - name: Install tkinter
-        run: |
-          sudo apt-get install python3-tk
 
       - name: Run py2app
         run: |
-           python3 macOS-build/setup.py py2app > py2app_result.txt || exit 1
+           python3 macOS-build/setup.py py2app || exit 1
 
       - name: Upload py2app result to Artifacts
         uses: actions/upload-artifact@v3
