@@ -28,10 +28,15 @@ jobs:
           python3 --version
           which pip3
           pip3 --version
+          
+      - name: Check tkinter install
+        run: |
+          python -m tkinter
 
       - name: Install pyinstaller
         run: |
           pip3 install pyinstaller
+
       - name: Run pyinstaller
         run: |
           pyinstaller --windowed FindOCVersion.py
