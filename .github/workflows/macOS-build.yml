@@ -13,10 +13,10 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install py2app
         run: |
-          python3 -m pip install py2app
+          pip3 install py2app
       - name: Install tkinter
         run: |
-          python3 -m pip install tk  
+          pip3 install tk  
       - name: Run py2app
         run: |
            python3 macOS-build/setup.py py2app
