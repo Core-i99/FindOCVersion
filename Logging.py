@@ -9,7 +9,18 @@ if platform.system() == "Darwin":
             os.path.expanduser("~"),
             "Library",
             "Logs"
-    )
+    )    
+
+if platform.system() == "Windows":
+    appdata_local = os.getenv("LOCALAPPDATA")
+    lib_logs = os.path.join(appdata_local, 'FindOCVersion')
+    if not os.path.exists(lib_logs):
+        try:
+            os.mkdir(lib_logs)
+        except Exception: 
+            print("Failed to create log dir")
+            sys.exit()     
+
 else:
     print("This OS is currently not supported")
     sys.exit()
