@@ -14,5 +14,11 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Check python version
-        run: python3 --version
+      - name: Set up Python 3
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10.x"
+      - name: Install tkinter
+        run: pip3 install tk
+      - name: Install pyinstaller
+        run: pip3 install pyinstaller  
