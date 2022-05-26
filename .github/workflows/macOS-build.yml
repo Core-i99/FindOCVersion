@@ -19,7 +19,7 @@ jobs:
       - name: Upload App to Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: FindOCVersion.app
+          name: FindOCVersion macOS
           path: FindOCVersion.app.zip
       - name: Upload to Release
         if: github.event_name == 'release'
@@ -28,4 +28,4 @@ jobs:
           repo_token: ${{ secrets.TOKEN }}
           file: FindOCVersion.app.zip
           tag: ${{ github.ref }}
-          file_glob: true    
+          file_glob: true
