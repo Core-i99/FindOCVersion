@@ -7,28 +7,17 @@ on:
     types: [published]
 
 jobs:
-  analyze-python-scripts:
-    name: Python Scripts
-    runs-on: ubuntu-latest
-    env:
-      JOB_TYPE: ANALYZE
+  prospector:
+    name: Run Prospector
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
-
-      - name: Install prospector
-        run: |
-          python3 -m pip install prospector
-      
-      - name: Install tkinter
-        run: |
-          sudo apt-get install python3-tk
-
       - name: Run prospector
         run: |
           python3 -m prospector > prospector_result.txt || exit 1
-
-      - name: Upload prospector result to Artifacts
+      - name: Upload Prospector result to Artifacts
         uses: actions/upload-artifact@v3
+        if: failure()
         with:
           name: Prospector Result
           path: ./prospector_result.txt
