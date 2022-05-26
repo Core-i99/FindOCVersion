@@ -26,6 +26,6 @@ jobs:
         uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
         with:
           repo_token: ${{ secrets.TOKEN }}
-          file: build/*/*.zip
+          file: FindOCVersion.app.zip
           tag: ${{ github.ref }}
           file_glob: true    
