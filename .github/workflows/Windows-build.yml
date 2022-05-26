@@ -22,3 +22,5 @@ jobs:
         run: pip3 install tk
       - name: Install pyinstaller
         run: pip3 install pyinstaller  
+      - name: Build
+        run: pyinstaller --onefile --windowed FindOCVersion.py
