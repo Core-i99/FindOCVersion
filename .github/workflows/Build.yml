@@ -41,7 +41,7 @@ jobs:
       - name: Install pyinstaller
         run: pip3 install pyinstaller  
       - name: Build
-        run: pyinstaller --onefile --windowed FindOCVersion.py
+        run: pyinstaller --onefile --windowed FindOCVersion.py --icon=./resources/icon.ico
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v3
         with:
