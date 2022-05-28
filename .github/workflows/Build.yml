@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build
-        run: pyinstaller --windowed FindOCVersion.py --icon=./resources/icon.icns
+        run: pyinstaller --windowed --icon=./resources/Icon.icns --add-data "./resources/Icon.ico;." FindOCVersion.py
       - name: Create zip
         run: cd dist; zip -r ../FindOCVersion.app.zip FindOCVersion.app
       - name: Upload to Artifacts
@@ -41,7 +41,7 @@ jobs:
       - name: Install pyinstaller
         run: pip3 install pyinstaller  
       - name: Build
-        run: pyinstaller --onefile --windowed FindOCVersion.py --icon=./resources/icon.ico
+        run: pyinstaller --onefile --windowed --icon=./resources/Icon.ico --add-data "./resources/Icon.ico;." FindOCVersion.py
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v3
         with:
