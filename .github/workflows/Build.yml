@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build
-        run: python3 macOS-build/setup.py py2app
+        run: pyinstaller --windowed FindOCVersion.py --icon=./resources/icon.icns
       - name: Create zip
         run: cd dist; zip -r ../FindOCVersion.app.zip FindOCVersion.app
       - name: Upload to Artifacts
