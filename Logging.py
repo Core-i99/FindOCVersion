@@ -4,6 +4,7 @@ import platform
 import sys
 from logging import handlers
 
+print(platform.system())
 if platform.system() == "Darwin":
     lib_logs = os.path.join(
             os.path.expanduser("~"),
@@ -11,7 +12,7 @@ if platform.system() == "Darwin":
             "Logs"
     )    
 
-if platform.system() == "Windows":
+elif platform.system() == "Windows":
     appdata_local = os.getenv("LOCALAPPDATA")
     lib_logs = os.path.join(appdata_local, 'FindOCVersion')
     if not os.path.exists(lib_logs):
