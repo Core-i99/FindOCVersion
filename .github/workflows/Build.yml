@@ -15,7 +15,7 @@ jobs:
       - name: Build
         run: pyinstaller --windowed --icon=./resources/Icon.icns --add-data "./resources/Icon.ico:." FindOCVersion.py
       - name: Create zip
-        run: zip -r FindOCVersion.app.zip ./dist/FindOCVersion.app
+        run: zip -r FindOCVersion.zip ./dist/FindOCVersion.app
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v3
         with:
