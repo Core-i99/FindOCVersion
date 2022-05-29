@@ -4,7 +4,6 @@ import platform
 import sys
 from logging import handlers
 
-print(platform.system())
 if platform.system() == "Darwin":
     lib_logs = os.path.join(
             os.path.expanduser("~"),
