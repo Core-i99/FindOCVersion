@@ -26,6 +26,7 @@ from tkinter.filedialog import askopenfilename
 import Logging
 import os
 import sys
+import platform
 
 # Database: 
 OC080REL = ["30 38 C6 05 AE 56 02 00 30 C7 05 A6 56 02 00 32 30 32 32 66 C7 05 A2 56 02 00 30 34", "OC 0.8.0 RELEASE"]
@@ -64,7 +65,8 @@ class MainWindow():
         self.debug = False
         self.root = Tk()  # Creating instance of tkinter class
         self.root.title("Find OC Version")
-        self.root.iconbitmap(self.resource_path("Icon.ico"))
+        if not platform.system() == 'Darwin':
+            self.root.iconbitmap(self.resource_path("Icon.ico"))
         self.root.resizable(False, False)  # Disable rootwindow resizing
         # Frames
         fm1 = Frame(self.root)
