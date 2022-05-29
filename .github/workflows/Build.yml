@@ -13,20 +13,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build
-        run: pyinstaller --windowed --icon=./resources/Icon.icns --add-data "./resources/Icon.ico:." FindOCVersion.py
+        run: python3 macOS-build/setup.py py2app
       - name: Create zip
-        run: zip -r FindOCVersion.zip ./dist/FindOCVersion.app
+        run: cd dist; zip -r ../FindOCVersion.app.zip FindOCVersion.app
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: FindOCVersion macOS
-          path: FindOCVersion.zip
+          path: FindOCVersion.app.zip
       - name: Upload to Release
         if: github.event_name == 'release'
         uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
         with:
           repo_token: ${{ secrets.TOKEN }}
-          file: FindOCVersion.zip
+          file: FindOCVersion.app.zip
           tag: ${{ github.ref }}
           file_glob: true
   windows-build:
