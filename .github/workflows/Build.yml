@@ -13,9 +13,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build
-        run: python3 macOS-build/setup.py py2app
+        run: pyinstaller --windowed --icon=./resources/Icon.icns --add-data "./resources/Icon.ico:." FindOCVersion.py
+      - name: move app
+        run: mv ./dist/FindOCVersion.app ./build-done/FindOCVersion.app
       - name: Create zip
-        run: cd dist; zip -r ../FindOCVersion.app.zip FindOCVersion.app
+        run: cd build-done; zip -r ../FindOCVersion.app.zip FindOCVersion.app
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -29,29 +31,29 @@ jobs:
           file: FindOCVersion.app.zip
           tag: ${{ github.ref }}
           file_glob: true
-  windows-build:
-    name: Build app for Windows
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.10.x"
-      - name: Install pyinstaller
-        run: pip3 install pyinstaller  
-      - name: Build
-        run: pyinstaller --onefile --windowed --icon=./resources/Icon.ico --add-data "./resources/Icon.ico;." FindOCVersion.py
-      - name: Upload to Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: FindOCVersion Windows
-          path: dist/FindOCVersion.exe
-      - name: Upload to Release
-        if: github.event_name == 'release'
-        uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
-        with:
-          repo_token: ${{ secrets.TOKEN }}
-          file: dist/FindOCVersion.exe
-          tag: ${{ github.ref }}
-          file_glob: true        
+  # windows-build:
+  #   name: Build app for Windows
+  #   runs-on: windows-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Set up Python 3
+  #       uses: actions/setup-python@v3
+  #       with:
+  #         python-version: "3.10.x"
+  #     - name: Install pyinstaller
+  #       run: pip3 install pyinstaller  
+  #     - name: Build
+  #       run: pyinstaller --onefile --windowed --icon=./resources/Icon.ico --add-data "./resources/Icon.ico;." FindOCVersion.py
+  #     - name: Upload to Artifacts
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: FindOCVersion Windows
+  #         path: dist/FindOCVersion.exe
+  #     - name: Upload to Release
+  #       if: github.event_name == 'release'
+  #       uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
+  #       with:
+  #         repo_token: ${{ secrets.TOKEN }}
+  #         file: dist/FindOCVersion.exe
+  #         tag: ${{ github.ref }}
+  #         file_glob: true        
