@@ -11,7 +11,7 @@ if platform.system() == "Darwin":
             "Logs"
     )    
 
-if platform.system() == "Windows":
+elif platform.system() == "Windows":
     appdata_local = os.getenv("LOCALAPPDATA")
     lib_logs = os.path.join(appdata_local, 'FindOCVersion')
     if not os.path.exists(lib_logs):

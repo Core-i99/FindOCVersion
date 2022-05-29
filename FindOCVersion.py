@@ -18,11 +18,15 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see <http://www.gnu.org/licenses/>.
+# pylint: disable=protected-access
 
 from tkinter.messagebox import showerror, showinfo
 from tkinter import Frame, Tk, Label, Button
 from tkinter.filedialog import askopenfilename
 import Logging
+import os
+import sys
+import platform
 
 # Database: 
 OC080REL = ["30 38 C6 05 AE 56 02 00 30 C7 05 A6 56 02 00 32 30 32 32 66 C7 05 A2 56 02 00 30 34", "OC 0.8.0 RELEASE"]
@@ -61,8 +65,9 @@ class MainWindow():
         self.debug = False
         self.root = Tk()  # Creating instance of tkinter class
         self.root.title("Find OC Version")
+        if not platform.system() == 'Darwin':
+            self.root.iconbitmap(self.resource_path("Icon.ico"))
         self.root.resizable(False, False)  # Disable rootwindow resizing
-
         # Frames
         fm1 = Frame(self.root)
         fm2 = Frame(self.root)
@@ -82,6 +87,15 @@ class MainWindow():
         self.centerwindow()
         self.root.mainloop()
 
+    def resource_path(self, relative_path):
+        try:
+            # PyInstaller creates a temp folder and stores path in _MEIPASS
+            base_path = sys._MEIPASS
+        except Exception:
+            base_path = os.path.abspath(".")
+
+        return os.path.join(base_path, relative_path)
+        
     def openFileClicked(self):
         FoundOC = False
         self.OcVersionLabel['text'] = 'OpenCore Version:'
